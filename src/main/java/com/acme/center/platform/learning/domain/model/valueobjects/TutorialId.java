@@ -15,7 +15,7 @@ import jakarta.persistence.Embeddable;
 public record TutorialId(Long tutorialId) {
 
     public TutorialId {
-        if (tutorialId == null || tutorialId <= 0) {
+        if (tutorialId == null || tutorialId < 0) {
             throw new IllegalArgumentException("TutorialId cannot be null or less than or equal to 0");
         }
     }
