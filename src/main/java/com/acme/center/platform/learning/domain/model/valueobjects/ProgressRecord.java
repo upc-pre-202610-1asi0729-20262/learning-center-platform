@@ -87,10 +87,28 @@ public class ProgressRecord {
 
     /**
      * Complete a tutorial with the given TutorialId
-     * @param enrollment Enrollment object
-     * @throws IllegalStateException if no tutorial is in progress
-     * @throws IllegalStateException if the tutorial with the given ID is already completed
+     * @param tutorialId the TutorialId of the tutorial to be completed
+     * @param learningPath the LearningPath object representing the learning path
      * @throws IllegalArgumentException if the tutorial with the given ID is not found in the progress record
+     * @see TutorialId
+     * @see LearningPath
+     */
+    public void completeTutorial(TutorialId tutorialId, LearningPath learningPath) {
+        ProgressRecordItem progressRecordItem = getProgressRecordItemWithTutorialId(tutorialId);
+        if (progressRecordItem != null) progressRecordItem.complete();
+        else throw new IllegalArgumentException("Tutorial with given Id not found in progress record");
+        if (learningPath.isLastTutorialInLearningPath(tutorialId)) return;
+        TutorialId nextTutorialId = learningPath.getNextTutorialInLearningPath(tutorialId);
+        if (nextTutorialId != null) {
+            ProgressRecordItem nextProgressRecordItem = new ProgressRecordItem(progressRecordItem.getEnrollment(), nextTutorialId);
+            progressRecordItems.add(nextProgressRecordItem);
+        }
+    }
+
+    /**
+     * Calculate the days elapsed for a given enrollment
+     * @param enrollment Enrollment
+     * @return long with the days elapsed for the given enrollment
      * @see Enrollment
      */
     public long calculateDaysElapsedForEnrollment(Enrollment enrollment) {

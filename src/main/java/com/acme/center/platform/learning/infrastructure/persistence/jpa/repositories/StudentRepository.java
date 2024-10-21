@@ -28,4 +28,12 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
      * @see ProfileId
      */
     Optional<Student> findByProfileId(ProfileId profileId);
+
+    /**
+     * This method is used to check if a student exists by its Acme student record id.
+     * @param studentRecordId The Acme student record id.
+     * @return A boolean indicating if the student exists.
+     * @see AcmeStudentRecordId
+     */
+    boolean existsByAcmeStudentRecordId(AcmeStudentRecordId studentRecordId);
 }
