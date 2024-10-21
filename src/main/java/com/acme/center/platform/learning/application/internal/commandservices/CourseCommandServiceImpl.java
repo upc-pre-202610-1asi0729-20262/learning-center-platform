@@ -13,7 +13,7 @@ import java.util.Optional;
 
 /**
  * Implementation of the CourseCommandService interface.
- * <p>This class is responsible for handling the commands related to the Course aggregate. It requires a CourseRepository</p>
+ * <p>This class is responsible for handling the commands related to the Course aggregate. It requires a CourseRepository.</p>
  * @see CourseCommandService
  * @see CourseRepository
  */

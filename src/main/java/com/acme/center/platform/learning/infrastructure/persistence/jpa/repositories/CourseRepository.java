@@ -31,4 +31,5 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
      * @return A boolean indicating if the course exists with the same title but a different id.
      */
     boolean existsByTitleAndIdIsNot(String title, Long id);
+
 }
