@@ -1,5 +1,6 @@
 package com.acme.center.platform.learning.domain.model.aggregates;
 
+import com.acme.center.platform.learning.domain.model.commands.CreateCourseCommand;
 import com.acme.center.platform.learning.domain.model.entities.LearningPathItem;
 import com.acme.center.platform.learning.domain.model.valueobjects.LearningPath;
 import com.acme.center.platform.learning.domain.model.valueobjects.TutorialId;
@@ -44,6 +45,17 @@ public class Course extends AuditableAbstractAggregateRoot<Course> {
         this.title = title;
         this.description = description;
         return this;
+    }
+
+    /**
+     * Create a new course with information from the command
+     * @param command The command to create the course
+     * @see CreateCourseCommand
+     */
+    public Course(CreateCourseCommand command) {
+        this.title = command.title();
+        this.description = command.description();
+        learningPath = new LearningPath();
     }
 
     /**
