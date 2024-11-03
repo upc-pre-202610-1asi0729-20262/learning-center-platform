@@ -13,6 +13,7 @@ import java.util.Optional;
 public interface EnrollmentQueryService {
     /**
      * Handle a get all enrollments by acme student record id query
+     *
      * @param query The get all enrollments by acme student record id query containing the acme student record id
      * @return The list of enrollments for the acme student record id
      * @see GetAllEnrollmentsByAcmeStudentRecordIdQuery
