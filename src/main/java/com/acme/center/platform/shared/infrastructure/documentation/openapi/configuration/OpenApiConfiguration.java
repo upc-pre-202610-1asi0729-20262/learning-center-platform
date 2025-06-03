@@ -42,7 +42,7 @@ public class OpenApiConfiguration {
                         .description("ACME Learning Platform wiki Documentation")
                         .url("https://acme-learning-platform.wiki.github.io/docs"));
 
-        // Add security scheme
+        // Add a security scheme
 
         final String securitySchemeName = "bearerAuth";
 
@@ -56,7 +56,7 @@ public class OpenApiConfiguration {
                                         .scheme("bearer")
                                         .bearerFormat("JWT")));
 
-        // Return OpenAPI configuration object with all the settings
+        // Return the OpenAPI configuration object with all the settings
 
         return openApi;
     }
