@@ -1,7 +1,7 @@
 package com.acme.center.platform.learning.application.internal.queryservices;
 
 import com.acme.center.platform.learning.domain.model.aggregates.Student;
-import com.acme.center.platform.learning.domain.model.queries.ExistByAcmeStudentRecordIdQuery;
+import com.acme.center.platform.learning.domain.model.queries.ExistsByAcmeStudentRecordIdQuery;
 import com.acme.center.platform.learning.domain.model.queries.GetStudentByAcmeStudentRecordIdQuery;
 import com.acme.center.platform.learning.domain.model.queries.GetStudentByProfileIdQuery;
 import com.acme.center.platform.learning.domain.services.StudentQueryService;
@@ -41,7 +41,7 @@ public class StudentQueryServiceImpl implements StudentQueryService {
 
     // inherited javadoc
     @Override
-    public boolean handle(ExistByAcmeStudentRecordIdQuery query) {
+    public boolean handle(ExistsByAcmeStudentRecordIdQuery query) {
         return studentRepository.existsByAcmeStudentRecordId(query.studentRecordId());
     }
 }

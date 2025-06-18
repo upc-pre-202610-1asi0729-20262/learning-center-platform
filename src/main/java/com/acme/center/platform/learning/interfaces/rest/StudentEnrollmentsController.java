@@ -1,6 +1,6 @@
 package com.acme.center.platform.learning.interfaces.rest;
 
-import com.acme.center.platform.learning.domain.model.queries.ExistByAcmeStudentRecordIdQuery;
+import com.acme.center.platform.learning.domain.model.queries.ExistsByAcmeStudentRecordIdQuery;
 import com.acme.center.platform.learning.domain.model.queries.GetAllEnrollmentsByAcmeStudentRecordIdQuery;
 import com.acme.center.platform.learning.domain.model.valueobjects.AcmeStudentRecordId;
 import com.acme.center.platform.learning.domain.services.EnrollmentQueryService;
@@ -66,8 +66,8 @@ public class StudentEnrollmentsController {
             @ApiResponse(responseCode = "404", description = "Student not found")})
     public ResponseEntity<List<EnrollmentResource>> getEnrollmentsForStudentWithStudentRecordId(@PathVariable String studentRecordId) {
         var acmeStudentRecordId = new AcmeStudentRecordId(studentRecordId);
-        var existByAcmeStudentRecordIdQuery = new ExistByAcmeStudentRecordIdQuery(acmeStudentRecordId);
-        if (studentQueryService.handle(existByAcmeStudentRecordIdQuery)) return ResponseEntity.notFound().build();
+        var existByAcmeStudentRecordIdQuery = new ExistsByAcmeStudentRecordIdQuery(acmeStudentRecordId);
+        if (!studentQueryService.handle(existByAcmeStudentRecordIdQuery)) return ResponseEntity.notFound().build();
         var getAllEnrollmentsByAcmeStudentRecordIdQuery = new GetAllEnrollmentsByAcmeStudentRecordIdQuery(acmeStudentRecordId);
         var enrollments = enrollmentQueryService.handle(getAllEnrollmentsByAcmeStudentRecordIdQuery);
         var enrollmentResources = enrollments.stream().map(EnrollmentResourceFromEntityAssembler::toResourceFromEntity).toList();

@@ -1,8 +1,7 @@
 package com.acme.center.platform.learning.domain.services;
 
 import com.acme.center.platform.learning.domain.model.aggregates.Student;
-import com.acme.center.platform.learning.domain.model.queries.ExistByAcmeStudentRecordIdQuery;
-import com.acme.center.platform.learning.domain.model.queries.GetEnrollmentByAcmeStudentRecordIdAndCourseIdQuery;
+import com.acme.center.platform.learning.domain.model.queries.ExistsByAcmeStudentRecordIdQuery;
 import com.acme.center.platform.learning.domain.model.queries.GetStudentByAcmeStudentRecordIdQuery;
 import com.acme.center.platform.learning.domain.model.queries.GetStudentByProfileIdQuery;
 
@@ -35,7 +34,7 @@ public interface StudentQueryService {
      * This method is used to handle the ExistByAcmeStudentRecordIdQuery.
      * @param query the ExistByAcmeStudentRecordIdQuery containing the student record id.
      * @return boolean indicating if a student with the given record ID exists.
-     * @see ExistByAcmeStudentRecordIdQuery
+     * @see ExistsByAcmeStudentRecordIdQuery
      */
-    boolean handle(ExistByAcmeStudentRecordIdQuery query);
+    boolean handle(ExistsByAcmeStudentRecordIdQuery query);
 }

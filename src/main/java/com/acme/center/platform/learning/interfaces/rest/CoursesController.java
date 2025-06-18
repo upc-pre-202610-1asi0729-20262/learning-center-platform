@@ -26,7 +26,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 /**
  * CoursesController
  * <p>
- *     All course related endpoints.
+ *     All course-related endpoints.
  * </p>
  */
 @RestController
