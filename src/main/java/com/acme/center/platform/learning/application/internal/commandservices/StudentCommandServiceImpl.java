@@ -30,7 +30,7 @@ public class StudentCommandServiceImpl implements StudentCommandService {
     // inherit javadoc
     @Override
     public AcmeStudentRecordId handle(CreateStudentCommand command) {
-        // Fetch profile from external service by email
+        // Fetch profile from an external service by email
         var profileId = externalProfileService.fetchProfileByEmail(command.email());
         if (profileId.isEmpty()) {
             profileId = externalProfileService.createProfile(
@@ -44,7 +44,8 @@ public class StudentCommandServiceImpl implements StudentCommandService {
                     command.country());
         } else {
             studentRepository.findByProfileId(profileId.get()).ifPresent(student -> {
-                throw new IllegalArgumentException("Student already exists in the system.");
+                var message = String.format("Student with ID %s already exists with same profile.", student.getAcmeStudentRecordId().studentRecordId());
+                throw new IllegalArgumentException(message);
             });
         }
 
