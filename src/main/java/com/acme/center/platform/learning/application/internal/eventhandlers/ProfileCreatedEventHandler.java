@@ -43,7 +43,7 @@ public class ProfileCreatedEventHandler {
      *
      * <p>Creates a {@code Student} record associated with the newly created profile.
      * Delegates to {@link StudentCommandService#handle(CreateStudentByProfileIdCommand)}
-     * which is idempotent — if a student for this profile already exists it
+     * which is idempotent — if a student for this profile already exists, it
      * returns the existing record without creating a duplicate.</p>
      *
      * @param event the {@link ProfileCreatedIntegrationEvent} published by the {@code profiles} context
