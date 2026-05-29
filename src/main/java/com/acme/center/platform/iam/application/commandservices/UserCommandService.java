@@ -15,14 +15,14 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
  */
 public interface UserCommandService {
     /**
-     * Handle sign in command
+     * Handle sign-in command
      * @param command the {@link SignInCommand} command
      * @return a {@link Result} with authenticated user and token or an {@link ApplicationError}
      */
     Result<ImmutablePair<User, String>, ApplicationError> handle(SignInCommand command);
 
     /**
-     * Handle sign up command
+     * Handle sign-up command
      * @param command the {@link SignUpCommand} command
      * @return a {@link Result} with created user or an {@link ApplicationError}
      */
