@@ -8,6 +8,7 @@ import com.acme.center.platform.profiles.interfaces.rest.resources.CreateProfile
 import com.acme.center.platform.profiles.interfaces.rest.resources.ProfileResource;
 import com.acme.center.platform.profiles.interfaces.rest.transform.CreateProfileCommandFromResourceAssembler;
 import com.acme.center.platform.profiles.interfaces.rest.transform.ProfileResourceFromEntityAssembler;
+import com.acme.center.platform.shared.interfaces.rest.util.HttpErrorMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -48,14 +49,24 @@ public class ProfilesController {
     @Operation(summary = "Create a new profile")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Profile created"),
-            @ApiResponse(responseCode = "400", description = "Bad request")})
-    public ResponseEntity<ProfileResource> createProfile(@RequestBody CreateProfileResource resource) {
+            @ApiResponse(responseCode = "400", description = "Bad request"),
+            @ApiResponse(responseCode = "409", description = "Conflict - profile already exists")})
+    public ResponseEntity<?> createProfile(@RequestBody CreateProfileResource resource) {
         var createProfileCommand = CreateProfileCommandFromResourceAssembler.toCommandFromResource(resource);
-        var profile = profileCommandService.handle(createProfileCommand);
-        if (profile.isEmpty()) return ResponseEntity.badRequest().build();
-        var createdProfile = profile.get();
-        var profileResource = ProfileResourceFromEntityAssembler.toResourceFromEntity(createdProfile);
-        return new ResponseEntity<>(profileResource, HttpStatus.CREATED);
+        var result = profileCommandService.handle(createProfileCommand);
+
+        if (result instanceof com.acme.center.platform.shared.application.result.Result.Success<?, ?> success) {
+            var profile = (com.acme.center.platform.profiles.domain.model.aggregates.Profile) success.value();
+            var profileResource = ProfileResourceFromEntityAssembler.toResourceFromEntity(profile);
+            return new ResponseEntity<>(profileResource, HttpStatus.CREATED);
+        }
+
+        if (result instanceof com.acme.center.platform.shared.application.result.Result.Failure<?, ?> failure) {
+            var error = (com.acme.center.platform.shared.application.result.ApplicationError) failure.error();
+            return HttpErrorMapper.toErrorResponse(error);
+        }
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     /**

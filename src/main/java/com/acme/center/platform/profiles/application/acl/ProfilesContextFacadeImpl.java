@@ -36,8 +36,10 @@ public class ProfilesContextFacadeImpl implements ProfilesContextFacade {
                 city,
                 postalCode,
                 country);
-        var profile = profileCommandService.handle(createProfileCommand);
-        return profile.isEmpty() ? Long.valueOf(0L) : profile.get().getId();
+        var result = profileCommandService.handle(createProfileCommand);
+        return result.toOptional()
+                .map(profile -> profile.getId())
+                .orElse(0L);
     }
 
     public Long fetchProfileIdByEmail(String email) {

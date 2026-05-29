@@ -1,7 +1,6 @@
 package com.acme.center.platform.iam.domain.model.entities;
 
 import com.acme.center.platform.iam.domain.model.valueobjects.Roles;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,24 +9,14 @@ import lombok.With;
 import java.util.List;
 
 /**
- * Role entity
- * <p>
- *     This entity represents the role of a user in the system.
- *     It is used to define the permissions of a user.
- * </p>
+ * Role domain entity.
  */
-@Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @With
 public class Role {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20)
     private Roles name;
 
     public Role(Roles name) {
@@ -35,7 +24,8 @@ public class Role {
     }
 
     /**
-     * Get the name of the role as a string
+     * Get the name of the role as a string.
+     *
      * @return the name of the role as a string
      */
     public String getStringName() {
@@ -43,7 +33,8 @@ public class Role {
     }
 
     /**
-     * Get the default role
+     * Get the default role.
+     *
      * @return the default role
      */
     public static Role getDefaultRole() {
@@ -51,7 +42,8 @@ public class Role {
     }
 
     /**
-     * Get the role from its name
+     * Get the role from its name.
+     *
      * @param name the name of the role
      * @return the role
      */
@@ -60,10 +52,8 @@ public class Role {
     }
 
     /**
-     * Validate the role set
-     * <p>
-     *     This method validates the role set and returns the default role if the set is empty.
-     * </p>
+     * Validate the role set.
+     *
      * @param roles the role set
      * @return the role set
      */
@@ -73,5 +63,4 @@ public class Role {
         }
         return roles;
     }
-
 }

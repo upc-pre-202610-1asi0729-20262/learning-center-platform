@@ -5,9 +5,9 @@ import com.acme.center.platform.profiles.domain.model.commands.CreateProfileComm
 import com.acme.center.platform.profiles.domain.model.valueobjects.EmailAddress;
 import com.acme.center.platform.profiles.application.commandservices.ProfileCommandService;
 import com.acme.center.platform.profiles.domain.repositories.ProfileRepository;
+import com.acme.center.platform.shared.application.result.ApplicationError;
+import com.acme.center.platform.shared.application.result.Result;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 /**
  * Profile Command Service Implementation
@@ -27,12 +27,22 @@ public class ProfileCommandServiceImpl implements ProfileCommandService {
 
     // inherited javadoc
     @Override
-    public Optional<Profile> handle(CreateProfileCommand command) {
+    public Result<Profile, ApplicationError> handle(CreateProfileCommand command) {
         var emailAddress = new EmailAddress(command.email());
         if (profileRepository.existsByEmailAddress(emailAddress)) {
-            throw new IllegalArgumentException("Profile with email address already exists");
+            return Result.failure(ApplicationError.conflict(
+                    "Profile",
+                    "A profile with email address '%s' already exists".formatted(command.email())));
         }
         var profile = new Profile(command);
-        return Optional.of(profileRepository.save(profile));
+        try {
+            var savedProfile = profileRepository.save(profile);
+            return Result.success(savedProfile);
+        } catch (Exception e) {
+            return Result.failure(ApplicationError.unexpected(
+                    "Profile creation",
+                    e.getMessage()));
+        }
     }
 }
+

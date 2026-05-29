@@ -1,7 +1,7 @@
 package com.acme.center.platform.iam.infrastructure.authorization.sfs.services;
 
+import com.acme.center.platform.iam.domain.repositories.UserRepository;
 import com.acme.center.platform.iam.infrastructure.authorization.sfs.model.UserDetailsImpl;
-import com.acme.center.platform.iam.infrastructure.persistence.jpa.repositories.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,12 +20,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    /**
-     * This method is responsible for loading the user details from the database.
-     * @param username The username.
-     * @return The UserDetails object.
-     * @throws UsernameNotFoundException If the user is not found.
-     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         var user = userRepository.findByUsername(username)
