@@ -1,6 +1,6 @@
 package com.acme.center.platform.iam.interfaces.rest;
 
-import com.acme.center.platform.iam.domain.services.UserCommandService;
+import com.acme.center.platform.iam.application.commandservices.UserCommandService;
 import com.acme.center.platform.iam.interfaces.rest.resources.AuthenticatedUserResource;
 import com.acme.center.platform.iam.interfaces.rest.resources.SignInResource;
 import com.acme.center.platform.iam.interfaces.rest.resources.SignUpResource;

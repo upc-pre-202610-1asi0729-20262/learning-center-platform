@@ -3,7 +3,7 @@ package com.acme.center.platform.iam.application.internal.commandservices;
 import com.acme.center.platform.iam.domain.model.commands.SeedRolesCommand;
 import com.acme.center.platform.iam.domain.model.entities.Role;
 import com.acme.center.platform.iam.domain.model.valueobjects.Roles;
-import com.acme.center.platform.iam.domain.services.RoleCommandService;
+import com.acme.center.platform.iam.application.commandservices.RoleCommandService;
 import com.acme.center.platform.iam.infrastructure.persistence.jpa.repositories.RoleRepository;
 import org.springframework.stereotype.Service;
 

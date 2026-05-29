@@ -5,7 +5,7 @@ import com.acme.center.platform.learning.domain.model.commands.AddTutorialToCour
 import com.acme.center.platform.learning.domain.model.commands.CreateCourseCommand;
 import com.acme.center.platform.learning.domain.model.commands.DeleteCourseCommand;
 import com.acme.center.platform.learning.domain.model.commands.UpdateCourseCommand;
-import com.acme.center.platform.learning.domain.services.CourseCommandService;
+import com.acme.center.platform.learning.application.commandservices.CourseCommandService;
 import com.acme.center.platform.learning.infrastructure.persistence.jpa.repositories.CourseRepository;
 import org.springframework.stereotype.Service;
 

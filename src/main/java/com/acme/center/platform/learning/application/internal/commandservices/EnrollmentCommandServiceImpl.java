@@ -6,7 +6,7 @@ import com.acme.center.platform.learning.domain.exceptions.EnrollmentRequestExce
 import com.acme.center.platform.learning.domain.exceptions.StudentNotFoundException;
 import com.acme.center.platform.learning.domain.model.aggregates.Enrollment;
 import com.acme.center.platform.learning.domain.model.commands.*;
-import com.acme.center.platform.learning.domain.services.EnrollmentCommandService;
+import com.acme.center.platform.learning.application.commandservices.EnrollmentCommandService;
 import com.acme.center.platform.learning.infrastructure.persistence.jpa.repositories.CourseRepository;
 import com.acme.center.platform.learning.infrastructure.persistence.jpa.repositories.EnrollmentRepository;
 import com.acme.center.platform.learning.infrastructure.persistence.jpa.repositories.StudentRepository;

@@ -1,4 +1,4 @@
-package com.acme.center.platform.learning.domain.services;
+package com.acme.center.platform.learning.application.commandservices;
 
 import com.acme.center.platform.learning.domain.model.aggregates.Course;
 import com.acme.center.platform.learning.domain.model.commands.AddTutorialToCourseLearningPathCommand;
@@ -40,3 +40,4 @@ public interface CourseCommandService {
      */
     void handle(AddTutorialToCourseLearningPathCommand command);
 }
+

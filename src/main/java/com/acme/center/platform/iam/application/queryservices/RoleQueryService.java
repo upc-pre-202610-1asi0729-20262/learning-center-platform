@@ -1,4 +1,4 @@
-package com.acme.center.platform.iam.domain.services;
+package com.acme.center.platform.iam.application.queryservices;
 
 import com.acme.center.platform.iam.domain.model.entities.Role;
 import com.acme.center.platform.iam.domain.model.queries.GetAllRolesQuery;
@@ -28,3 +28,4 @@ public interface RoleQueryService {
      */
     Optional<Role> handle(GetRoleByNameQuery query);
 }
+

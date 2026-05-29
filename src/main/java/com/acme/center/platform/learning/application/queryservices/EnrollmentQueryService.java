@@ -1,4 +1,4 @@
-package com.acme.center.platform.learning.domain.services;
+package com.acme.center.platform.learning.application.queryservices;
 
 import com.acme.center.platform.learning.domain.model.aggregates.Enrollment;
 import com.acme.center.platform.learning.domain.model.queries.*;
@@ -48,3 +48,4 @@ public interface EnrollmentQueryService {
      */
     Optional<Enrollment> handle(GetEnrollmentByAcmeStudentRecordIdAndCourseIdQuery query);
 }
+

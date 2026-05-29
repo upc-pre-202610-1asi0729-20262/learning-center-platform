@@ -6,7 +6,7 @@ import com.acme.center.platform.learning.domain.model.entities.LearningPathItem;
 import com.acme.center.platform.learning.domain.model.queries.GetAllCoursesQuery;
 import com.acme.center.platform.learning.domain.model.queries.GetCourseByIdQuery;
 import com.acme.center.platform.learning.domain.model.queries.GetLearningPathItemByCourseIdAndTutorialIdQuery;
-import com.acme.center.platform.learning.domain.services.CourseQueryService;
+import com.acme.center.platform.learning.application.queryservices.CourseQueryService;
 import com.acme.center.platform.learning.infrastructure.persistence.jpa.repositories.CourseRepository;
 import org.springframework.stereotype.Service;
 

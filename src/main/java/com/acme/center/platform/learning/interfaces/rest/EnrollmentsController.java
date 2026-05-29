@@ -5,8 +5,8 @@ import com.acme.center.platform.learning.domain.model.commands.ConfirmEnrollment
 import com.acme.center.platform.learning.domain.model.commands.RejectEnrollmentCommand;
 import com.acme.center.platform.learning.domain.model.queries.GetAllEnrollmentsQuery;
 import com.acme.center.platform.learning.domain.model.queries.GetEnrollmentByAcmeStudentRecordIdAndCourseIdQuery;
-import com.acme.center.platform.learning.domain.services.EnrollmentCommandService;
-import com.acme.center.platform.learning.domain.services.EnrollmentQueryService;
+import com.acme.center.platform.learning.application.commandservices.EnrollmentCommandService;
+import com.acme.center.platform.learning.application.queryservices.EnrollmentQueryService;
 import com.acme.center.platform.learning.interfaces.rest.resources.EnrollmentResource;
 import com.acme.center.platform.learning.interfaces.rest.resources.RequestEnrollmentResource;
 import com.acme.center.platform.learning.interfaces.rest.transform.EnrollmentResourceFromEntityAssembler;

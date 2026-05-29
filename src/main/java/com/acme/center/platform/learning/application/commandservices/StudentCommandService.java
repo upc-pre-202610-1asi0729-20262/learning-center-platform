@@ -1,4 +1,4 @@
-package com.acme.center.platform.learning.domain.services;
+package com.acme.center.platform.learning.application.commandservices;
 
 import com.acme.center.platform.learning.domain.model.commands.CreateStudentCommand;
 import com.acme.center.platform.learning.domain.model.commands.UpdateStudentMetricsOnTutorialCompletedCommand;
@@ -24,3 +24,4 @@ public interface StudentCommandService {
      */
     AcmeStudentRecordId handle(UpdateStudentMetricsOnTutorialCompletedCommand command);
 }
+

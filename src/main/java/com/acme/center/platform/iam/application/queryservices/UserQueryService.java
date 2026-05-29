@@ -1,4 +1,4 @@
-package com.acme.center.platform.iam.domain.services;
+package com.acme.center.platform.iam.application.queryservices;
 
 import com.acme.center.platform.iam.domain.model.aggregates.User;
 import com.acme.center.platform.iam.domain.model.queries.GetAllUsersQuery;
@@ -37,3 +37,4 @@ public interface UserQueryService {
     Optional<User> handle(GetUserByUsernameQuery query);
 
 }
+

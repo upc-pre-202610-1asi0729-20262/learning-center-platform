@@ -3,8 +3,8 @@ package com.acme.center.platform.profiles.application.acl;
 import com.acme.center.platform.profiles.domain.model.commands.CreateProfileCommand;
 import com.acme.center.platform.profiles.domain.model.queries.GetProfileByEmailQuery;
 import com.acme.center.platform.profiles.domain.model.valueobjects.EmailAddress;
-import com.acme.center.platform.profiles.domain.services.ProfileCommandService;
-import com.acme.center.platform.profiles.domain.services.ProfileQueryService;
+import com.acme.center.platform.profiles.application.commandservices.ProfileCommandService;
+import com.acme.center.platform.profiles.application.queryservices.ProfileQueryService;
 import com.acme.center.platform.profiles.interfaces.acl.ProfilesContextFacade;
 import org.springframework.stereotype.Service;
 

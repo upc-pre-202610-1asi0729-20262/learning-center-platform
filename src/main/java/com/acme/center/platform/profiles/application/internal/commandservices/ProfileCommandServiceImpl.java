@@ -3,7 +3,7 @@ package com.acme.center.platform.profiles.application.internal.commandservices;
 import com.acme.center.platform.profiles.domain.model.aggregates.Profile;
 import com.acme.center.platform.profiles.domain.model.commands.CreateProfileCommand;
 import com.acme.center.platform.profiles.domain.model.valueobjects.EmailAddress;
-import com.acme.center.platform.profiles.domain.services.ProfileCommandService;
+import com.acme.center.platform.profiles.application.commandservices.ProfileCommandService;
 import com.acme.center.platform.profiles.infrastructure.persistence.jpa.repositories.ProfileRepository;
 import org.springframework.stereotype.Service;
 

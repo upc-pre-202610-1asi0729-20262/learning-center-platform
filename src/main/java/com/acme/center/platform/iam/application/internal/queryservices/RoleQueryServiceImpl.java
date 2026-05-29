@@ -3,7 +3,7 @@ package com.acme.center.platform.iam.application.internal.queryservices;
 import com.acme.center.platform.iam.domain.model.entities.Role;
 import com.acme.center.platform.iam.domain.model.queries.GetAllRolesQuery;
 import com.acme.center.platform.iam.domain.model.queries.GetRoleByNameQuery;
-import com.acme.center.platform.iam.domain.services.RoleQueryService;
+import com.acme.center.platform.iam.application.queryservices.RoleQueryService;
 import com.acme.center.platform.iam.infrastructure.persistence.jpa.repositories.RoleRepository;
 import org.springframework.stereotype.Service;
 

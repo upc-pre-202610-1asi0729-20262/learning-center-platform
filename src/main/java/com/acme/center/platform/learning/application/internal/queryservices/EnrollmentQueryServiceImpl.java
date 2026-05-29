@@ -2,7 +2,7 @@ package com.acme.center.platform.learning.application.internal.queryservices;
 
 import com.acme.center.platform.learning.domain.model.aggregates.Enrollment;
 import com.acme.center.platform.learning.domain.model.queries.*;
-import com.acme.center.platform.learning.domain.services.EnrollmentQueryService;
+import com.acme.center.platform.learning.application.queryservices.EnrollmentQueryService;
 import com.acme.center.platform.learning.infrastructure.persistence.jpa.repositories.EnrollmentRepository;
 import org.springframework.stereotype.Service;
 

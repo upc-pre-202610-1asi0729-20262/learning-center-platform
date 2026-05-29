@@ -1,4 +1,4 @@
-package com.acme.center.platform.learning.domain.services;
+package com.acme.center.platform.learning.application.queryservices;
 
 import com.acme.center.platform.learning.domain.model.aggregates.Student;
 import com.acme.center.platform.learning.domain.model.queries.ExistsByAcmeStudentRecordIdQuery;
@@ -38,3 +38,4 @@ public interface StudentQueryService {
      */
     boolean handle(ExistsByAcmeStudentRecordIdQuery query);
 }
+

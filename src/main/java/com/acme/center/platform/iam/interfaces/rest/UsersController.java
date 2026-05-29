@@ -2,7 +2,7 @@ package com.acme.center.platform.iam.interfaces.rest;
 
 import com.acme.center.platform.iam.domain.model.queries.GetAllUsersQuery;
 import com.acme.center.platform.iam.domain.model.queries.GetUserByIdQuery;
-import com.acme.center.platform.iam.domain.services.UserQueryService;
+import com.acme.center.platform.iam.application.queryservices.UserQueryService;
 import com.acme.center.platform.iam.interfaces.rest.resources.UserResource;
 import com.acme.center.platform.iam.interfaces.rest.transform.UserResourceFromEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;

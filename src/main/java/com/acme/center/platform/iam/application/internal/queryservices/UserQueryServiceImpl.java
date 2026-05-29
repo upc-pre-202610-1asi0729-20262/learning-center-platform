@@ -4,7 +4,7 @@ import com.acme.center.platform.iam.domain.model.aggregates.User;
 import com.acme.center.platform.iam.domain.model.queries.GetAllUsersQuery;
 import com.acme.center.platform.iam.domain.model.queries.GetUserByIdQuery;
 import com.acme.center.platform.iam.domain.model.queries.GetUserByUsernameQuery;
-import com.acme.center.platform.iam.domain.services.UserQueryService;
+import com.acme.center.platform.iam.application.queryservices.UserQueryService;
 import com.acme.center.platform.iam.infrastructure.persistence.jpa.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 

@@ -4,7 +4,7 @@ import com.acme.center.platform.learning.domain.model.aggregates.Student;
 import com.acme.center.platform.learning.domain.model.queries.ExistsByAcmeStudentRecordIdQuery;
 import com.acme.center.platform.learning.domain.model.queries.GetStudentByAcmeStudentRecordIdQuery;
 import com.acme.center.platform.learning.domain.model.queries.GetStudentByProfileIdQuery;
-import com.acme.center.platform.learning.domain.services.StudentQueryService;
+import com.acme.center.platform.learning.application.queryservices.StudentQueryService;
 import com.acme.center.platform.learning.infrastructure.persistence.jpa.repositories.StudentRepository;
 import org.springframework.stereotype.Service;
 

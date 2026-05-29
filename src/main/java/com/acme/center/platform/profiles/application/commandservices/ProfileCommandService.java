@@ -1,4 +1,4 @@
-package com.acme.center.platform.profiles.domain.services;
+package com.acme.center.platform.profiles.application.commandservices;
 
 import com.acme.center.platform.profiles.domain.model.aggregates.Profile;
 import com.acme.center.platform.profiles.domain.model.commands.CreateProfileCommand;
@@ -18,3 +18,4 @@ public interface ProfileCommandService {
      */
     Optional<Profile> handle(CreateProfileCommand command);
 }
+

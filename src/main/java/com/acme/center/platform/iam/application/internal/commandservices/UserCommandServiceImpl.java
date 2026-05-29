@@ -5,7 +5,7 @@ import com.acme.center.platform.iam.application.internal.outboundservices.tokens
 import com.acme.center.platform.iam.domain.model.aggregates.User;
 import com.acme.center.platform.iam.domain.model.commands.SignInCommand;
 import com.acme.center.platform.iam.domain.model.commands.SignUpCommand;
-import com.acme.center.platform.iam.domain.services.UserCommandService;
+import com.acme.center.platform.iam.application.commandservices.UserCommandService;
 import com.acme.center.platform.iam.infrastructure.persistence.jpa.repositories.RoleRepository;
 import com.acme.center.platform.iam.infrastructure.persistence.jpa.repositories.UserRepository;
 import org.apache.commons.lang3.tuple.ImmutablePair;

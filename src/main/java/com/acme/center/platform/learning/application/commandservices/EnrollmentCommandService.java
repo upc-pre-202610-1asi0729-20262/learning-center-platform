@@ -1,4 +1,4 @@
-package com.acme.center.platform.learning.domain.services;
+package com.acme.center.platform.learning.application.commandservices;
 
 import com.acme.center.platform.learning.domain.model.commands.*;
 
@@ -43,3 +43,4 @@ public interface EnrollmentCommandService {
      */
     Long handle(CompleteTutorialForEnrollmentCommand command);
 }
+

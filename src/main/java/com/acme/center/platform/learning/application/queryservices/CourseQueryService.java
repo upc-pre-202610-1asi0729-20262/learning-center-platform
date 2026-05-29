@@ -1,4 +1,4 @@
-package com.acme.center.platform.learning.domain.services;
+package com.acme.center.platform.learning.application.queryservices;
 
 import com.acme.center.platform.learning.domain.model.aggregates.Course;
 import com.acme.center.platform.learning.domain.model.entities.LearningPathItem;
@@ -36,3 +36,4 @@ public interface CourseQueryService {
      */
     Optional<LearningPathItem> handle(GetLearningPathItemByCourseIdAndTutorialIdQuery query);
 }
+

@@ -1,4 +1,4 @@
-package com.acme.center.platform.profiles.domain.services;
+package com.acme.center.platform.profiles.application.queryservices;
 
 import com.acme.center.platform.profiles.domain.model.aggregates.Profile;
 import com.acme.center.platform.profiles.domain.model.queries.GetAllProfilesQuery;
@@ -36,3 +36,4 @@ public interface ProfileQueryService {
      */
     List<Profile> handle(GetAllProfilesQuery query);
 }
+

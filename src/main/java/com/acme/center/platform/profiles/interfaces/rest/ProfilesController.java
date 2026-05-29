@@ -2,8 +2,8 @@ package com.acme.center.platform.profiles.interfaces.rest;
 
 import com.acme.center.platform.profiles.domain.model.queries.GetAllProfilesQuery;
 import com.acme.center.platform.profiles.domain.model.queries.GetProfileByIdQuery;
-import com.acme.center.platform.profiles.domain.services.ProfileCommandService;
-import com.acme.center.platform.profiles.domain.services.ProfileQueryService;
+import com.acme.center.platform.profiles.application.commandservices.ProfileCommandService;
+import com.acme.center.platform.profiles.application.queryservices.ProfileQueryService;
 import com.acme.center.platform.profiles.interfaces.rest.resources.CreateProfileResource;
 import com.acme.center.platform.profiles.interfaces.rest.resources.ProfileResource;
 import com.acme.center.platform.profiles.interfaces.rest.transform.CreateProfileCommandFromResourceAssembler;
