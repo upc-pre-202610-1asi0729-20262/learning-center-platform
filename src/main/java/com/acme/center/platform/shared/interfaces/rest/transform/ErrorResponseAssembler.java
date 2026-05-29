@@ -6,12 +6,19 @@ import org.jspecify.annotations.NullMarked;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.context.i18n.LocaleContextHolder;
+
+import java.text.MessageFormat;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
  * Assembler for converting application errors to HTTP responses.
  */
 @NullMarked
 public final class ErrorResponseAssembler {
+    private static final String MESSAGES_BASENAME = "messages";
 
     private ErrorResponseAssembler() {
     }
@@ -25,8 +32,39 @@ public final class ErrorResponseAssembler {
      */
     public static ResponseEntity<ErrorResource> toErrorResponseFromApplicationError(ApplicationError error) {
         HttpStatusCode status = toStatusFromErrorCode(error.code());
-        ErrorResource resource = new ErrorResource(error.code(), error.message(), error.details());
+        String localizedMessage = toLocalizedMessageFromApplicationError(error);
+        ErrorResource resource = new ErrorResource(error.code(), localizedMessage, error.details());
         return new ResponseEntity<>(resource, status);
+    }
+
+    private static String toLocalizedMessageFromApplicationError(ApplicationError error) {
+        String messageKey = toMessageKeyFromErrorCode(error.code());
+        return toLocalizedMessageWithFallback(messageKey, error.message(), error.details(), error.code());
+    }
+
+    private static String toMessageKeyFromErrorCode(String errorCode) {
+        return switch (errorCode) {
+            case "VALIDATION_ERROR" -> "error.validation.message";
+            case "BUSINESS_RULE_VIOLATION" -> "error.business-rule.message";
+            case "UNEXPECTED_ERROR" -> "error.unexpected.message";
+            case String s when s.endsWith("_NOT_FOUND") -> "error.not-found.message";
+            case String s when s.endsWith("_CONFLICT") -> "error.conflict.message";
+            default -> "error.generic.message";
+        };
+    }
+
+    private static String toLocalizedMessageWithFallback(String key, String fallback, Object... args) {
+        Locale locale = LocaleContextHolder.getLocale();
+        try {
+            ResourceBundle bundle = ResourceBundle.getBundle(MESSAGES_BASENAME, locale);
+            if (!bundle.containsKey(key)) {
+                return fallback;
+            }
+            String template = bundle.getString(key);
+            return MessageFormat.format(template, args);
+        } catch (MissingResourceException ex) {
+            return fallback;
+        }
     }
 
     /**
