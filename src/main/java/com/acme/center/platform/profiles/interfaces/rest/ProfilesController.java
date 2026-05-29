@@ -8,7 +8,7 @@ import com.acme.center.platform.profiles.interfaces.rest.resources.CreateProfile
 import com.acme.center.platform.profiles.interfaces.rest.resources.ProfileResource;
 import com.acme.center.platform.profiles.interfaces.rest.transform.CreateProfileCommandFromResourceAssembler;
 import com.acme.center.platform.profiles.interfaces.rest.transform.ProfileResourceFromEntityAssembler;
-import com.acme.center.platform.shared.interfaces.rest.util.HttpErrorMapper;
+import com.acme.center.platform.shared.interfaces.rest.transform.ErrorResponseAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -63,7 +63,7 @@ public class ProfilesController {
 
         if (result instanceof com.acme.center.platform.shared.application.result.Result.Failure<?, ?> failure) {
             var error = (com.acme.center.platform.shared.application.result.ApplicationError) failure.error();
-            return HttpErrorMapper.toErrorResponse(error);
+            return ErrorResponseAssembler.toErrorResponseFromApplicationError(error);
         }
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

@@ -1,4 +1,4 @@
-package com.acme.center.platform.shared.interfaces.rest.util;
+package com.acme.center.platform.shared.interfaces.rest.transform;
 
 import com.acme.center.platform.shared.application.result.ApplicationError;
 import com.acme.center.platform.shared.interfaces.rest.resources.ErrorResource;
@@ -7,14 +7,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 /**
- * Utility for mapping ApplicationError to HTTP responses.
- * Provides consistent HTTP status code selection based on error codes.
+ * Assembler for converting application errors to HTTP responses.
  */
 @NullMarked
-public final class HttpErrorMapper {
+public final class ErrorResponseAssembler {
 
-    private HttpErrorMapper() {
-        // utility class
+    private ErrorResponseAssembler() {
     }
 
     /**
@@ -24,8 +22,8 @@ public final class HttpErrorMapper {
      * @param error the ApplicationError to map
      * @return a ResponseEntity with the appropriate HTTP status and error resource
      */
-    public static ResponseEntity<ErrorResource> toErrorResponse(ApplicationError error) {
-        HttpStatus status = mapErrorCodeToStatus(error.code());
+    public static ResponseEntity<ErrorResource> toErrorResponseFromApplicationError(ApplicationError error) {
+        HttpStatus status = toStatusFromErrorCode(error.code());
         ErrorResource resource = new ErrorResource(error.code(), error.message(), error.details());
         return new ResponseEntity<>(resource, status);
     }
@@ -36,7 +34,7 @@ public final class HttpErrorMapper {
      * @param errorCode the error code string (e.g., "PROFILE_NOT_FOUND", "VALIDATION_ERROR")
      * @return the corresponding HttpStatus
      */
-    public static HttpStatus mapErrorCodeToStatus(String errorCode) {
+    public static HttpStatus toStatusFromErrorCode(String errorCode) {
         return switch (errorCode) {
             case "VALIDATION_ERROR" -> HttpStatus.BAD_REQUEST;
             case String s when s.endsWith("_NOT_FOUND") -> HttpStatus.NOT_FOUND;
