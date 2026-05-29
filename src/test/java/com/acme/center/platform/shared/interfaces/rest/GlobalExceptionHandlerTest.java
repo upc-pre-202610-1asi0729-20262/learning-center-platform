@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -18,16 +19,30 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void handleRuntimeExceptionUsesLocalizedUnexpectedMessage() {
-        LocaleContextHolder.setLocale(new Locale("es"));
+        LocaleContextHolder.setLocale(Locale.forLanguageTag("es"));
 
         var handler = new GlobalExceptionHandler();
         var response = handler.handleRuntimeException(new RuntimeException("boom"));
-        var error = (ErrorResource) response.getBody();
+        var error = Objects.requireNonNull((ErrorResource) response.getBody());
 
         assertEquals(500, response.getStatusCode().value());
         assertEquals("UNEXPECTED_ERROR", error.code());
         assertEquals("Error inesperado", error.message());
         assertEquals("boom", error.details());
+    }
+
+    @Test
+    void handleIllegalArgumentExceptionReturnsValidationError() {
+        var handler = new GlobalExceptionHandler();
+        var response = handler.handleIllegalArgumentException(
+                new IllegalArgumentException("Student record id must be a valid UUID")
+        );
+        var error = Objects.requireNonNull((ErrorResource) response.getBody());
+
+        assertEquals(400, response.getStatusCode().value());
+        assertEquals("VALIDATION_ERROR", error.code());
+        assertEquals("Validation failed", error.message());
+        assertEquals("Student record id must be a valid UUID", error.details());
     }
 }
 

@@ -8,12 +8,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(
     name = "EnrollmentRequest",
     description = "Request payload for enrolling a student in a course",
-    example = "{\"studentRecordId\": \"STU-2025-001\", \"courseId\": 1}"
+    example = "{\"studentRecordId\": \"123e4567-e89b-12d3-a456-426614174000\", \"courseId\": 1}"
 )
 public record RequestEnrollmentResource(
     @Schema(
-        description = "Student record identifier",
-        example = "STU-2025-001"
+        description = "Student record identifier as UUID",
+        example = "123e4567-e89b-12d3-a456-426614174000",
+        format = "uuid"
     )
     String studentRecordId,
 
@@ -25,7 +26,7 @@ public record RequestEnrollmentResource(
 ) {
     /**
      * Validates the resource.
-     * @throws IllegalArgumentException if the student record id or course id is null or blank.
+     * @throws IllegalArgumentException if the student record id or course id is null or invalid.
      */
     public RequestEnrollmentResource {
         if (studentRecordId == null || studentRecordId.isBlank()) {

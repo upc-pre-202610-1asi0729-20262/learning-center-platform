@@ -8,13 +8,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(
     name = "EnrollmentResponse",
     description = "Enrollment information response",
-    example = "{\"enrollmentId\": 1, \"studentRecordId\": \"STU-2025-001\", \"courseId\": 1, \"status\": \"PENDING\"}"
+    example = "{\"enrollmentId\": 1, \"studentRecordId\": \"123e4567-e89b-12d3-a456-426614174000\", \"courseId\": 1, \"status\": \"PENDING\"}"
 )
 public record EnrollmentResource(
     @Schema(description = "Enrollment unique identifier", example = "1")
     Long enrollmentId,
 
-    @Schema(description = "Student record identifier", example = "STU-2025-001")
+    @Schema(description = "Student record identifier as UUID", example = "123e4567-e89b-12d3-a456-426614174000", format = "uuid")
     String studentRecordId,
 
     @Schema(description = "Course identifier", example = "1")

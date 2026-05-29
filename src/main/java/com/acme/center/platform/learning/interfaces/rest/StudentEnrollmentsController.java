@@ -72,8 +72,8 @@ public class StudentEnrollmentsController {
     public ResponseEntity<List<EnrollmentResource>> getEnrollmentsForStudentWithStudentRecordId(
             @PathVariable
             @Parameter(
-                description = "Student record identifier (e.g., STU-2025-001)",
-                example = "STU-2025-001",
+                description = "Student record identifier as UUID",
+                example = "123e4567-e89b-12d3-a456-426614174000",
                 required = true
             )
             String studentRecordId

@@ -8,10 +8,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(
     name = "StudentResponse",
     description = "Student information response",
-    example = "{\"acmeStudentRecordId\": \"STU-2025-001\", \"profileId\": 1, \"totalCompletedCourses\": 3, \"totalCompletedTutorials\": 15}"
+    example = "{\"acmeStudentRecordId\": \"123e4567-e89b-12d3-a456-426614174000\", \"profileId\": 1, \"totalCompletedCourses\": 3, \"totalCompletedTutorials\": 15}"
 )
 public record StudentResource(
-    @Schema(description = "Student record identifier", example = "STU-2025-001")
+    @Schema(description = "Student record identifier as UUID", example = "123e4567-e89b-12d3-a456-426614174000", format = "uuid")
     String acmeStudentRecordId,
 
     @Schema(description = "Associated profile identifier", example = "1")
