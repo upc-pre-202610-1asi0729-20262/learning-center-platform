@@ -12,6 +12,9 @@ import com.acme.center.platform.shared.application.result.ApplicationError;
 import com.acme.center.platform.shared.interfaces.rest.transform.ErrorResponseAssembler;
 import com.acme.center.platform.shared.interfaces.rest.transform.ResponseEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,11 +25,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * ProfilesController
+ * ProfilesController - Profiles management
  */
 @RestController
 @RequestMapping(value = "/api/v1/profiles", produces = MediaType.APPLICATION_JSON_VALUE)
-@Tag(name = "Profiles", description = "Available Profile Endpoints")
+@Tag(name = "Profiles", description = "Profile management endpoints")
 public class ProfilesController {
     private final ProfileCommandService profileCommandService;
     private final ProfileQueryService profileQueryService;
@@ -44,14 +47,22 @@ public class ProfilesController {
     /**
      * Create a new profile
      * @param resource The {@link CreateProfileResource} instance
-     * @return A {@link ProfileResource} resource for the created profile, or a bad request response if the profile could not be created.
+     * @return A {@link ProfileResource} resource for the created profile
      */
     @PostMapping
-    @Operation(summary = "Create a new profile")
+    @Operation(
+        summary = "Create a new profile",
+        description = "Creates a new user profile with contact and address information."
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Profile created"),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "409", description = "Conflict - profile already exists")})
+            @ApiResponse(
+                responseCode = "201",
+                description = "Profile created successfully",
+                content = @Content(schema = @Schema(implementation = ProfileResource.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "409", description = "Conflict - profile already exists")
+    })
     public ResponseEntity<?> createProfile(@Valid @RequestBody CreateProfileResource resource) {
         var createProfileCommand = CreateProfileCommandFromResourceAssembler.toCommandFromResource(resource);
         var result = profileCommandService.handle(createProfileCommand);
@@ -66,14 +77,26 @@ public class ProfilesController {
     /**
      * Get a profile by ID
      * @param profileId The profile ID
-     * @return A {@link ProfileResource} resource for the profile, or a not found response if the profile could not be found.
+     * @return A {@link ProfileResource} resource for the profile
      */
     @GetMapping("/{profileId}")
-    @Operation(summary = "Get a profile by ID")
+    @Operation(
+        summary = "Get profile by ID",
+        description = "Retrieves a specific user profile's information by unique identifier."
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Profile found"),
-            @ApiResponse(responseCode = "404", description = "Profile not found")})
-    public ResponseEntity<?> getProfileById(@PathVariable Long profileId) {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Profile found",
+                content = @Content(schema = @Schema(implementation = ProfileResource.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Profile not found")
+    })
+    public ResponseEntity<?> getProfileById(
+            @PathVariable
+            @Parameter(description = "Profile unique identifier", example = "1", required = true)
+            Long profileId
+    ) {
         var getProfileByIdQuery = new GetProfileByIdQuery(profileId);
         var profile = profileQueryService.handle(getProfileByIdQuery);
         if (profile.isEmpty()) {
@@ -87,13 +110,21 @@ public class ProfilesController {
 
     /**
      * Get all profiles
-     * @return A list of {@link ProfileResource} resources for all profiles, or a not found response if no profiles are found.
+     * @return A list of {@link ProfileResource} resources for all profiles
      */
     @GetMapping
-    @Operation(summary = "Get all profiles")
+    @Operation(
+        summary = "Get all profiles",
+        description = "Retrieves a list of all user profiles in the system."
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Profiles found"),
-            @ApiResponse(responseCode = "404", description = "Profiles not found")})
+            @ApiResponse(
+                responseCode = "200",
+                description = "Profiles found",
+                content = @Content(schema = @Schema(implementation = ProfileResource.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "No profiles found")
+    })
     public ResponseEntity<?> getAllProfiles() {
         var profiles = profileQueryService.handle(new GetAllProfilesQuery());
         if (profiles.isEmpty()) {

@@ -12,6 +12,9 @@ import com.acme.center.platform.shared.application.result.ApplicationError;
 import com.acme.center.platform.shared.application.result.Result;
 import com.acme.center.platform.shared.interfaces.rest.transform.ResponseEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,7 +29,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  */
 @RestController
 @RequestMapping(value = "/api/v1/students", produces = APPLICATION_JSON_VALUE)
-@Tag(name = "Students", description = "Available Student Endpoints")
+@Tag(name = "Students", description = "Student management endpoints")
 public class StudentsController {
     private final StudentCommandService studentCommandService;
     private final StudentQueryService studentQueryService;
@@ -49,12 +52,22 @@ public class StudentsController {
      * @return The {@link StudentResource} resource for the created student, or a bad request response if the student was not created
      */
     @PostMapping
-    @Operation(summary = "Create a new student", description = "Create a new student")
+    @Operation(
+        summary = "Create a new student",
+        description = "Creates a new student record with complete profile information."
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Student created"),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "404", description = "Student not found")})
-    public ResponseEntity<?> createStudent(CreateStudentResource resource) {
+            @ApiResponse(
+                responseCode = "201",
+                description = "Student created successfully",
+                content = @Content(schema = @Schema(implementation = StudentResource.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token required"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
+            @ApiResponse(responseCode = "409", description = "Conflict - Student already exists")
+    })
+    public ResponseEntity<?> createStudent(@RequestBody CreateStudentResource resource) {
         var createStudentCommand = CreateStudentCommandFromResourceAssembler.toCommandFromResource(resource);
         var result = studentCommandService.handle(createStudentCommand)
                 .flatMap(studentRecordId -> studentQueryService.handle(new GetStudentByAcmeStudentRecordIdQuery(studentRecordId))
@@ -78,11 +91,27 @@ public class StudentsController {
      * @return The {@link StudentResource} resource for the student, or a not found response if the student was not found
      */
     @GetMapping("/{studentRecordId}")
-    @Operation(summary = "Get student by Acme Student Record Id", description = "Get student by Acme Student Record Id")
+    @Operation(
+        summary = "Get student by Record ID",
+        description = "Retrieves a student's information by their unique student record identifier."
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Student found"),
-            @ApiResponse(responseCode = "404", description = "Student not found")})
-    public ResponseEntity<StudentResource> getStudentByAcmeStudentRecordId(@PathVariable String studentRecordId) {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Student retrieved successfully",
+                content = @Content(schema = @Schema(implementation = StudentResource.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Student not found")
+    })
+    public ResponseEntity<StudentResource> getStudentByAcmeStudentRecordId(
+            @PathVariable
+            @Parameter(
+                description = "Student record identifier (e.g., STU-2025-001)",
+                example = "STU-2025-001",
+                required = true
+            )
+            String studentRecordId
+    ) {
         var acmeStudentRecordId = new AcmeStudentRecordId(studentRecordId);
         var getStudentByAcmeStudentRecordIdQuery = new GetStudentByAcmeStudentRecordIdQuery(acmeStudentRecordId);
         var student = studentQueryService.handle(getStudentByAcmeStudentRecordIdQuery);

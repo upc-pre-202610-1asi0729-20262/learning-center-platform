@@ -16,6 +16,9 @@ import com.acme.center.platform.shared.application.result.Result;
 import com.acme.center.platform.shared.interfaces.rest.resources.MessageResource;
 import com.acme.center.platform.shared.interfaces.rest.transform.ResponseEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,11 +31,11 @@ import java.util.List;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
- * Enrollments Controller
+ * Enrollments Controller - Manages student course enrollments and approval workflow
  */
 @RestController
 @RequestMapping(value = "/api/v1/enrollments", produces = APPLICATION_JSON_VALUE)
-@Tag(name = "Enrollments", description = "Available Enrollment Endpoints")
+@Tag(name = "Enrollments", description = "Enrollment management endpoints")
 public class EnrollmentsController {
     private final EnrollmentCommandService enrollmentCommandService;
     private final EnrollmentQueryService enrollmentQueryService;
@@ -55,11 +58,19 @@ public class EnrollmentsController {
      * @return The {@link EnrollmentResource} Resource of the requested enrollment
      */
     @PostMapping
-    @Operation(summary = "Request Enrollment", description = "Request an enrollment for a student in a course")
+    @Operation(
+        summary = "Request enrollment",
+        description = "Creates a new enrollment request for a student to enroll in a course. Enrollment requires approval."
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Enrollment requested successfully"),
-            @ApiResponse(responseCode = "400", description = "Bad request"),
-            @ApiResponse(responseCode = "404", description = "Enrollment not found")})
+            @ApiResponse(
+                responseCode = "201",
+                description = "Enrollment requested successfully",
+                content = @Content(schema = @Schema(implementation = EnrollmentResource.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "Invalid enrollment data"),
+            @ApiResponse(responseCode = "409", description = "Conflict - Student already enrolled in course")
+    })
     public ResponseEntity<?> requestEnrollment(@RequestBody RequestEnrollmentResource resource) {
         var requestEnrollmentCommand = RequestEnrollmentCommandFromResourceAssembler.toCommandFromResource(resource);
         var result = enrollmentCommandService.handle(requestEnrollmentCommand)
@@ -74,7 +85,7 @@ public class EnrollmentsController {
         return ResponseEntityAssembler.toResponseEntityFromResult(
                 result,
                 EnrollmentResourceFromEntityAssembler::toResourceFromEntity,
-                HttpStatus.OK
+                HttpStatus.CREATED
         );
     }
 
@@ -82,14 +93,27 @@ public class EnrollmentsController {
      * Confirm Enrollment
      *
      * @param enrollmentId The enrollment ID
-     * @return The {@link MessageResource} Resource of the confirmation, or a bad request response
+     * @return The {@link MessageResource} Resource of the confirmation
      */
     @PostMapping("/{enrollmentId}/confirmations")
-    @Operation(summary = "Confirm Enrollment", description = "Confirm an enrollment")
+    @Operation(
+        summary = "Confirm enrollment",
+        description = "Approves and confirms a pending enrollment request. Student becomes active in the course."
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Enrollment confirmed successfully"),
-            @ApiResponse(responseCode = "400", description = "Bad request")})
-    public ResponseEntity<?> confirmEnrollment(@PathVariable Long enrollmentId) {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Enrollment confirmed successfully",
+                content = @Content(schema = @Schema(implementation = MessageResource.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Enrollment not found"),
+            @ApiResponse(responseCode = "409", description = "Conflict - Enrollment already confirmed or invalid state")
+    })
+    public ResponseEntity<?> confirmEnrollment(
+            @PathVariable
+            @Parameter(description = "Enrollment identifier", example = "1", required = true)
+            Long enrollmentId
+    ) {
         var confirmEnrollmentCommand = new ConfirmEnrollmentCommand(enrollmentId);
         var result = enrollmentCommandService.handle(confirmEnrollmentCommand)
                 .map(confirmedEnrollmentId -> new MessageResource("Enrollment confirmed successfully"));
@@ -97,40 +121,64 @@ public class EnrollmentsController {
     }
 
     /**
-     * Handles a request to reject an enrollment.
+     * Reject Enrollment
      *
      * @param enrollmentId The enrollment ID.
-     * @return MessageResource with the enrollment ID.
-     * @see MessageResource
+     * @return MessageResource with the enrollment confirmation message.
      */
     @PostMapping("/{enrollmentId}/rejections")
-    @Operation(summary = "Reject Enrollment", description = "Reject an enrollment")
+    @Operation(
+        summary = "Reject enrollment",
+        description = "Rejects a pending enrollment request. Student cannot access the course."
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Enrollment rejected successfully"),
-            @ApiResponse(responseCode = "400", description = "Bad request")})
-    public ResponseEntity<?> rejectEnrollment(@PathVariable Long enrollmentId) {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Enrollment rejected successfully",
+                content = @Content(schema = @Schema(implementation = MessageResource.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Enrollment not found"),
+            @ApiResponse(responseCode = "409", description = "Conflict - Enrollment not in valid state for rejection")
+    })
+    public ResponseEntity<?> rejectEnrollment(
+            @PathVariable
+            @Parameter(description = "Enrollment identifier", example = "1", required = true)
+            Long enrollmentId
+    ) {
         var rejectEnrollmentCommand = new RejectEnrollmentCommand(enrollmentId);
         var result = enrollmentCommandService.handle(rejectEnrollmentCommand)
-                .map(rejectedEnrollmentId -> new MessageResource("Rejected Enrollment ID: " + rejectedEnrollmentId));
+                .map(rejectedEnrollmentId -> new MessageResource("Enrollment rejected successfully"));
         return ResponseEntityAssembler.toResponseEntityFromResult(result, message -> message, HttpStatus.OK);
     }
 
     /**
-     * Handles a request to cancel an enrollment.
+     * Cancel Enrollment
      *
      * @param enrollmentId The enrollment ID.
-     * @return MessageResource with the enrollment ID.
-     * @see MessageResource
-     *
+     * @return MessageResource with the cancellation confirmation message.
      */
     @PostMapping("/{enrollmentId}/cancellations")
-    @Operation(summary = "Cancel Enrollment", description = "Cancel an enrollment")
+    @Operation(
+        summary = "Cancel enrollment",
+        description = "Cancels an active or pending enrollment. Student loses access to the course."
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Enrollment cancelled successfully")})
-    public ResponseEntity<?> cancelEnrollment(@PathVariable Long enrollmentId) {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Enrollment cancelled successfully",
+                content = @Content(schema = @Schema(implementation = MessageResource.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Enrollment not found"),
+            @ApiResponse(responseCode = "409", description = "Conflict - Enrollment not in valid state for cancellation")
+    })
+    public ResponseEntity<?> cancelEnrollment(
+            @PathVariable
+            @Parameter(description = "Enrollment identifier", example = "1", required = true)
+            Long enrollmentId
+    ) {
         var cancelEnrollmentCommand = new CancelEnrollmentCommand(enrollmentId);
         var result = enrollmentCommandService.handle(cancelEnrollmentCommand)
-                .map(cancelledEnrollmentId -> new MessageResource("Cancelled Enrollment ID: " + cancelledEnrollmentId));
+                .map(cancelledEnrollmentId -> new MessageResource("Enrollment cancelled successfully"));
         return ResponseEntityAssembler.toResponseEntityFromResult(result, message -> message, HttpStatus.OK);
     }
 
@@ -138,12 +186,19 @@ public class EnrollmentsController {
      * Gets all the enrollments.
      *
      * @return The list of all the enrollment resources available.
-     * @see EnrollmentResource
      */
     @GetMapping
-    @Operation(summary = "Get all enrollments", description = "Get all enrollments")
+    @Operation(
+        summary = "Get all enrollments",
+        description = "Retrieves a list of all enrollments in the system with various statuses."
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Enrollments found")})
+            @ApiResponse(
+                responseCode = "200",
+                description = "Enrollments retrieved successfully",
+                content = @Content(schema = @Schema(implementation = EnrollmentResource.class))
+            )
+    })
     public ResponseEntity<List<EnrollmentResource>> getAllEnrollments() {
         var getAllEnrollmentsQuery = new GetAllEnrollmentsQuery();
         var enrollments = enrollmentQueryService.handle(getAllEnrollmentsQuery);

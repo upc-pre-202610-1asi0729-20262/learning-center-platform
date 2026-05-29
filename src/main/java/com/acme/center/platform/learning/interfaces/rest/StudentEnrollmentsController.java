@@ -8,6 +8,9 @@ import com.acme.center.platform.learning.application.queryservices.StudentQueryS
 import com.acme.center.platform.learning.interfaces.rest.resources.EnrollmentResource;
 import com.acme.center.platform.learning.interfaces.rest.transform.EnrollmentResourceFromEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,19 +25,14 @@ import java.util.List;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
- * StudentsController
+ * StudentEnrollmentsController - Retrieves enrollments for a specific student
  *
- * <p>Controller that handles the endpoints for students.
- * It uses the {@link EnrollmentQueryService} to handle the queries
- * for enrollments.
- * <ul>
- *     <li>GET /api/v1/students/{studentRecordId}/enrollments</li>
- * </ul>
+ * <p>Endpoint for retrieving all enrollments for a student by their record ID.
  * </p>
  */
 @RestController
 @RequestMapping(value = "/api/v1/students/{studentRecordId}/enrollments", produces = APPLICATION_JSON_VALUE)
-@Tag(name = "Students")
+@Tag(name = "Students", description = "Student enrollment management endpoints")
 public class StudentEnrollmentsController {
     private final EnrollmentQueryService enrollmentQueryService;
     private final StudentQueryService studentQueryService;
@@ -57,14 +55,29 @@ public class StudentEnrollmentsController {
      *
      * @param studentRecordId the student record ID
      * @return the {@link List} of {@link EnrollmentResource} enrollments for the student
-     * @see EnrollmentResource
      */
     @GetMapping
-    @Operation(summary = "Get enrollments for a student", description = "Get the enrollments for a student")
+    @Operation(
+        summary = "Get student enrollments",
+        description = "Retrieves all course enrollments for a specific student by their record identifier."
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Enrollments retrieved successfully"),
-            @ApiResponse(responseCode = "404", description = "Student not found")})
-    public ResponseEntity<List<EnrollmentResource>> getEnrollmentsForStudentWithStudentRecordId(@PathVariable String studentRecordId) {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Enrollments retrieved successfully",
+                content = @Content(schema = @Schema(implementation = EnrollmentResource.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Student not found")
+    })
+    public ResponseEntity<List<EnrollmentResource>> getEnrollmentsForStudentWithStudentRecordId(
+            @PathVariable
+            @Parameter(
+                description = "Student record identifier (e.g., STU-2025-001)",
+                example = "STU-2025-001",
+                required = true
+            )
+            String studentRecordId
+    ) {
         var acmeStudentRecordId = new AcmeStudentRecordId(studentRecordId);
         var existByAcmeStudentRecordIdQuery = new ExistsByAcmeStudentRecordIdQuery(acmeStudentRecordId);
         if (!studentQueryService.handle(existByAcmeStudentRecordIdQuery)) return ResponseEntity.notFound().build();

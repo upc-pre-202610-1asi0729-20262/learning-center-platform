@@ -16,6 +16,9 @@ import com.acme.center.platform.shared.application.result.Result;
 import com.acme.center.platform.shared.interfaces.rest.resources.MessageResource;
 import com.acme.center.platform.shared.interfaces.rest.transform.ResponseEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,12 +33,12 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 /**
  * CoursesController
  * <p>
- *     All course-related endpoints.
+ *     All course-related endpoints for managing courses in the learning platform.
  * </p>
  */
 @RestController
 @RequestMapping(value = "/api/v1/courses", produces = APPLICATION_JSON_VALUE)
-@Tag(name = "Courses", description = "Available Course Endpoints")
+@Tag(name = "Courses", description = "Course management endpoints")
 public class CoursesController {
     private final CourseCommandService courseCommandService;
     private final CourseQueryService courseQueryService;
@@ -59,11 +62,17 @@ public class CoursesController {
      * @return The {@link CourseResource} resource for the created course
      */
     @PostMapping
-    @Operation(summary = "Create a new course", description = "Create a new course")
+    @Operation(summary = "Create a new course", description = "Creates a new course with title and description. Requires instructor or admin role.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Course created"),
-            @ApiResponse(responseCode = "400", description = "Invalid input"),
-            @ApiResponse(responseCode = "404", description = "Course not found")})
+            @ApiResponse(
+                responseCode = "201",
+                description = "Course created successfully",
+                content = @Content(schema = @Schema(implementation = CourseResource.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token required"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions")
+    })
     public ResponseEntity<?> createCourse(@RequestBody CreateCourseResource resource) {
         var createCourseCommand = CreateCourseCommandFromResourceAssembler.toCommandFromResource(resource);
         var result = courseCommandService.handle(createCourseCommand)
@@ -86,11 +95,20 @@ public class CoursesController {
      * @return The {@link CourseResource} resource for the course
      */
     @GetMapping("/{courseId}")
-    @Operation(summary = "Get course by id", description = "Get course by id")
+    @Operation(summary = "Get course by ID", description = "Retrieves a specific course by its unique identifier.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Course found"),
-            @ApiResponse(responseCode = "404", description = "Course not found")})
-    public ResponseEntity<CourseResource> getCourseById(@PathVariable Long courseId) {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Course found",
+                content = @Content(schema = @Schema(implementation = CourseResource.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Course not found")
+    })
+    public ResponseEntity<CourseResource> getCourseById(
+            @PathVariable
+            @Parameter(description = "Unique course identifier", example = "1", required = true)
+            Long courseId
+    ) {
         var getCourseByIdQuery = new GetCourseByIdQuery(courseId);
         var course = courseQueryService.handle(getCourseByIdQuery);
         if (course.isEmpty()) return ResponseEntity.notFound().build();
@@ -105,10 +123,15 @@ public class CoursesController {
      * @return The list of {@link CourseResource} resources for all courses
      */
     @GetMapping
-    @Operation(summary = "Get all courses", description = "Get all courses")
+    @Operation(summary = "Get all courses", description = "Retrieves a list of all available courses.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Courses found"),
-            @ApiResponse(responseCode = "404", description = "Courses not found")})
+            @ApiResponse(
+                responseCode = "200",
+                description = "Courses retrieved successfully",
+                content = @Content(schema = @Schema(implementation = CourseResource.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "No courses found")
+    })
     public ResponseEntity<List<CourseResource>> getAllCourses() {
         var courses = courseQueryService.handle(new GetAllCoursesQuery());
         if (courses.isEmpty()) return ResponseEntity.notFound().build();
@@ -126,11 +149,24 @@ public class CoursesController {
      * @return The {@link CourseResource} resource for the updated course
      */
     @PutMapping("/{courseId}")
-    @Operation(summary = "Update course", description = "Update course")
+    @Operation(summary = "Update course", description = "Updates an existing course's title and description. Requires instructor or admin role.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Course updated"),
-            @ApiResponse(responseCode = "404", description = "Course not found")})
-    public ResponseEntity<?> updateCourse(@PathVariable Long courseId, @RequestBody UpdateCourseResource resource) {
+            @ApiResponse(
+                responseCode = "200",
+                description = "Course updated successfully",
+                content = @Content(schema = @Schema(implementation = CourseResource.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token required"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
+            @ApiResponse(responseCode = "404", description = "Course not found")
+    })
+    public ResponseEntity<?> updateCourse(
+            @PathVariable
+            @Parameter(description = "Unique course identifier", example = "1", required = true)
+            Long courseId,
+            @RequestBody UpdateCourseResource resource
+    ) {
         var updateCourseCommand = UpdateCourseCommandFromResourceAssembler.toCommandFromResource(courseId, resource);
         var result = courseCommandService.handle(updateCourseCommand);
         return ResponseEntityAssembler.toResponseEntityFromResult(
@@ -147,11 +183,21 @@ public class CoursesController {
      * @return The message for the deleted course
      */
     @DeleteMapping("/{courseId}")
-    @Operation(summary = "Delete course", description = "Delete course")
+    @Operation(summary = "Delete course", description = "Deletes a course. Requires instructor or admin role.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Course deleted"),
-            @ApiResponse(responseCode = "404", description = "Course not found")})
-    public ResponseEntity<?> deleteCourse(@PathVariable Long courseId) {
+            @ApiResponse(
+                responseCode = "204",
+                description = "Course deleted successfully"
+            ),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token required"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions"),
+            @ApiResponse(responseCode = "404", description = "Course not found")
+    })
+    public ResponseEntity<?> deleteCourse(
+            @PathVariable
+            @Parameter(description = "Unique course identifier", example = "1", required = true)
+            Long courseId
+    ) {
         var deleteCourseCommand = new DeleteCourseCommand(courseId);
         var result = courseCommandService.handle(deleteCourseCommand)
                 .map(id -> new MessageResource("Course with given id successfully deleted"));

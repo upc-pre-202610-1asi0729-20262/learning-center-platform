@@ -11,6 +11,8 @@ import com.acme.center.platform.iam.interfaces.rest.transform.SignUpCommandFromR
 import com.acme.center.platform.iam.interfaces.rest.transform.UserResourceFromEntityAssembler;
 import com.acme.center.platform.shared.interfaces.rest.transform.ResponseEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,14 +30,14 @@ import org.springframework.web.bind.annotation.RestController;
  *     This controller is responsible for handling authentication requests.
  *     It exposes two endpoints:
  *     <ul>
- *         <li>POST /api/v1/auth/sign-in</li>
- *         <li>POST /api/v1/auth/sign-up</li>
+ *         <li>POST /api/v1/authentication/sign-in</li>
+ *         <li>POST /api/v1/authentication/sign-up</li>
  *     </ul>
  * </p>
  */
 @RestController
 @RequestMapping(value = "/api/v1/authentication", produces = MediaType.APPLICATION_JSON_VALUE)
-@Tag(name = "Authentication", description = "Available Authentication Endpoints")
+@Tag(name = "Authentication", description = "Authentication and user registration endpoints")
 public class AuthenticationController {
     private final UserCommandService userCommandService;
 
@@ -45,14 +47,34 @@ public class AuthenticationController {
 
     /**
      * Handles the sign-in request.
-     * @param signInResource the sign-in request body.
-     * @return the authenticated user resource.
+     * @param signInResource the sign-in request body with username and password.
+     * @return the authenticated user resource with JWT token.
      */
     @PostMapping("/sign-in")
-    @Operation(summary = "Sign-in", description = "Sign-in with the provided credentials.")
+    @Operation(
+        summary = "User sign-in",
+        description = "Authenticates a user with provided credentials and returns JWT token for subsequent requests."
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "User authenticated successfully."),
-            @ApiResponse(responseCode = "404", description = "User not found.")})
+            @ApiResponse(
+                responseCode = "200",
+                description = "User authenticated successfully",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = AuthenticatedUserResource.class)
+                )
+            ),
+            @ApiResponse(
+                responseCode = "400",
+                description = "Invalid credentials or malformed request",
+                content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                responseCode = "404",
+                description = "User not found with provided username",
+                content = @Content(mediaType = "application/json")
+            )
+    })
     public ResponseEntity<?> signIn(@RequestBody SignInResource signInResource) {
         var signInCommand = SignInCommandFromResourceAssembler.toCommandFromResource(signInResource);
         var result = userCommandService.handle(signInCommand);
@@ -65,14 +87,34 @@ public class AuthenticationController {
 
     /**
      * Handles the sign-up request.
-     * @param signUpResource the sign-up request body.
-     * @return the created user resource.
+     * @param signUpResource the sign-up request body with username, password, and roles.
+     * @return the created user resource with assigned roles.
      */
     @PostMapping("/sign-up")
-    @Operation(summary = "Sign-up", description = "Sign-up with the provided credentials.")
+    @Operation(
+        summary = "User registration",
+        description = "Creates a new user account with provided credentials and assigns specified roles."
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "User created successfully."),
-            @ApiResponse(responseCode = "400", description = "Bad request.")})
+            @ApiResponse(
+                responseCode = "201",
+                description = "User created successfully",
+                content = @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = UserResource.class)
+                )
+            ),
+            @ApiResponse(
+                responseCode = "400",
+                description = "Invalid input data or username already exists",
+                content = @Content(mediaType = "application/json")
+            ),
+            @ApiResponse(
+                responseCode = "409",
+                description = "Conflict - username already taken",
+                content = @Content(mediaType = "application/json")
+            )
+    })
     public ResponseEntity<?> signUp(@RequestBody SignUpResource signUpResource) {
         var signUpCommand = SignUpCommandFromResourceAssembler.toCommandFromResource(signUpResource);
         var result = userCommandService.handle(signUpCommand);

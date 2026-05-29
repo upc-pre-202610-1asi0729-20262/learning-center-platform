@@ -3,13 +3,17 @@ package com.acme.center.platform.shared.infrastructure.documentation.openapi.con
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.ExternalDocumentation;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 @Configuration
 public class OpenApiConfiguration {
@@ -28,7 +32,6 @@ public class OpenApiConfiguration {
     @Bean
     public OpenAPI learningPlatformOpenApi() {
 
-
         // General configuration
         var openApi = new OpenAPI();
         openApi
@@ -36,14 +39,31 @@ public class OpenApiConfiguration {
                         .title(this.applicationName)
                         .description(this.applicationDescription)
                         .version(this.applicationVersion)
-                        .license(new License().name("Apache 2.0")
-                                .url("https://springdoc.org")))
+                        .contact(new Contact()
+                                .name("ACME Learning Center Support")
+                                .email("support@acme-learning.com")
+                                .url("https://acme-learning.com/support"))
+                        .license(new License()
+                                .name("Apache 2.0")
+                                .url("https://www.apache.org/licenses/LICENSE-2.0.html")))
                 .externalDocs(new ExternalDocumentation()
                         .description("ACME Learning Platform wiki Documentation")
                         .url("https://acme-learning-platform.wiki.github.io/docs"));
 
-        // Add a security scheme
+        // Add server configurations
+        openApi.servers(List.of(
+                new Server()
+                        .url("http://localhost:8080")
+                        .description("Local Development Environment"),
+                new Server()
+                        .url("https://staging-api.acme-learning.com")
+                        .description("Staging Environment"),
+                new Server()
+                        .url("https://api.acme-learning.com")
+                        .description("Production Environment")
+        ));
 
+        // Add a security scheme
         final String securitySchemeName = "bearerAuth";
 
         openApi.addSecurityItem(new SecurityRequirement()
@@ -54,9 +74,8 @@ public class OpenApiConfiguration {
                                         .name(securitySchemeName)
                                         .type(SecurityScheme.Type.HTTP)
                                         .scheme("bearer")
-                                        .bearerFormat("JWT")));
-
-        // Return the OpenAPI configuration object with all the settings
+                                        .bearerFormat("JWT")
+                                        .description("JWT Bearer token for API authentication")));
 
         return openApi;
     }

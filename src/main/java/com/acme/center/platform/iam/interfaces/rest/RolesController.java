@@ -5,8 +5,11 @@ import com.acme.center.platform.iam.application.queryservices.RoleQueryService;
 import com.acme.center.platform.iam.interfaces.rest.resources.RoleResource;
 import com.acme.center.platform.iam.interfaces.rest.transform.RoleResourceFromEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- *  Roles Controller
- *  This controller is responsible for handling all the requests related to roles
+ *  Roles Controller - Manages system roles and permissions
+ *  This controller is responsible for retrieving all available roles in the system
  */
 @RestController
 @RequestMapping(value = "/api/v1/roles", produces = MediaType.APPLICATION_JSON_VALUE)
-@Tag(name = "Roles", description = "Available Role Endpoints")
+@Tag(name = "Roles", description = "Role management endpoints")
 public class RolesController {
     private final RoleQueryService roleQueryService;
 
@@ -33,13 +36,22 @@ public class RolesController {
     /**
      * Get all roles
      * @return List of role resources
-     * @see RoleResource
      */
     @GetMapping
-    @Operation(summary = "Get all roles", description = "Get all the roles available in the system.")
+    @Operation(
+        summary = "Get all roles",
+        description = "Retrieves a list of all available system roles.",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Roles retrieved successfully."),
-            @ApiResponse(responseCode = "401", description = "Unauthorized.")})
+            @ApiResponse(
+                responseCode = "200",
+                description = "Roles retrieved successfully",
+                content = @Content(schema = @Schema(implementation = RoleResource.class))
+            ),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - JWT token required or invalid"),
+            @ApiResponse(responseCode = "403", description = "Forbidden - Insufficient permissions")
+    })
     public ResponseEntity<List<RoleResource>> getAllRoles() {
         var getAllRolesQuery = new GetAllRolesQuery();
         var roles = roleQueryService.handle(getAllRolesQuery);

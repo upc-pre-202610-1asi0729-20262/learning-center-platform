@@ -1,17 +1,40 @@
 package com.acme.center.platform.learning.interfaces.rest.resources;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * Create student resource.
  */
+@Schema(
+    name = "CreateStudentRequest",
+    description = "Request payload for creating a new student",
+    example = "{\"firstName\": \"John\", \"lastName\": \"Doe\", \"email\": \"john.doe@example.com\", \"street\": \"123 Main St\", \"number\": \"Apt 4\", \"city\": \"Springfield\", \"postalCode\": \"12345\", \"country\": \"USA\"}"
+)
 public record CreateStudentResource(
-        String firstName,
-        String lastName,
-        String email,
-        String street,
-        String number,
-        String city,
-        String postalCode,
-        String country) {
+    @Schema(description = "Student first name", example = "John", minLength = 1, maxLength = 50)
+    String firstName,
+
+    @Schema(description = "Student last name", example = "Doe", minLength = 1, maxLength = 50)
+    String lastName,
+
+    @Schema(description = "Student email address", example = "john.doe@example.com")
+    String email,
+
+    @Schema(description = "Street address", example = "123 Main St", minLength = 1, maxLength = 100)
+    String street,
+
+    @Schema(description = "Street number or apartment", example = "Apt 4", minLength = 1, maxLength = 20)
+    String number,
+
+    @Schema(description = "City name", example = "Springfield", minLength = 1, maxLength = 50)
+    String city,
+
+    @Schema(description = "Postal code", example = "12345", minLength = 1, maxLength = 20)
+    String postalCode,
+
+    @Schema(description = "Country name", example = "USA", minLength = 1, maxLength = 50)
+    String country
+) {
     /**
      * Validates the resource.
      * @throws IllegalArgumentException if any of the fields is null or blank.
