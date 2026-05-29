@@ -82,16 +82,8 @@ public class Profile extends AbstractDomainAggregateRoot<Profile> {
     }
 
 
-    public void setEmailAddress(EmailAddress emailAddress) {
-        this.emailAddress = Objects.requireNonNull(emailAddress, "emailAddress must not be null");
-    }
-
     public StreetAddress getStreetAddressValue() {
         return streetAddress;
-    }
-
-    public void setStreetAddress(StreetAddress streetAddress) {
-        this.streetAddress = Objects.requireNonNull(streetAddress, "streetAddress must not be null");
     }
 
     /**
@@ -118,22 +110,6 @@ public class Profile extends AbstractDomainAggregateRoot<Profile> {
         return streetAddress.getStreetAddress();
     }
 
-    /**
-     * Update name.
-     * @param firstName First name
-     * @param lastName Last name
-     */
-    public void updateName(String firstName, String lastName) {
-        this.name = new PersonName(firstName, lastName);
-    }
-
-    /**
-     * Update email address.
-     * @param email Email address
-     */
-    public void updateEmailAddress(String email) {
-        this.emailAddress = new EmailAddress(email);
-    }
 
     /**
      * Signals that this profile has just been created and persisted.

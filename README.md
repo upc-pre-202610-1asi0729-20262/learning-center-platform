@@ -114,3 +114,13 @@ The three bounded contexts now follow a clean separation between domain and pers
 - Spring Data JPA repositories now target persistence entities only and are named with `*PersistenceRepository`.
 - Repository adapters in infrastructure bridge domain repository ports and persistence repositories.
 - Shared mixed JPA/domain bases were retired. Domain aggregates use `shared/domain/model/aggregates/AbstractDomainAggregateRoot`, while persistence entities use infrastructure persistence bases such as `shared/infrastructure/persistence/jpa/entities/AuditableAbstractPersistenceEntity` when needed.
+
+### Lombok Usage Convention
+
+To preserve clarity and domain intent, Lombok is used selectively:
+
+- Domain model (`*/domain/*`): prefer explicit behavior methods; allow Lombok only for trivial accessors when it does not hide invariants.
+- Avoid `@Data` in aggregates/entities to prevent accidental broad mutability and generated semantics that are not domain-driven.
+- Infrastructure/persistence (`*/infrastructure/*`): Lombok can be used more broadly for boilerplate reduction in technical models.
+- REST resources favor Java records over Lombok annotations.
+
