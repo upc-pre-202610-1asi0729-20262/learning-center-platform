@@ -38,8 +38,23 @@ public final class ErrorResponseAssembler {
     }
 
     private static String toLocalizedMessageFromApplicationError(ApplicationError error) {
-        String messageKey = toMessageKeyFromErrorCode(error.code());
-        return toLocalizedMessageWithFallback(messageKey, error.message(), error.details(), error.code());
+        String specificKey = toSpecificMessageKeyFromErrorCode(error.code());
+        String specificMessage = toLocalizedMessageOrNull(specificKey, error.details(), toEntityNameFromErrorCode(error.code()));
+        if (specificMessage != null) {
+            return specificMessage;
+        }
+
+        String fallbackKey = toMessageKeyFromErrorCode(error.code());
+        return toLocalizedMessageWithFallback(
+                fallbackKey,
+                error.message(),
+                error.details(),
+                toEntityNameFromErrorCode(error.code())
+        );
+    }
+
+    private static String toSpecificMessageKeyFromErrorCode(String errorCode) {
+        return "error.%s.message".formatted(errorCode.toLowerCase(Locale.ROOT).replace('_', '-'));
     }
 
     private static String toMessageKeyFromErrorCode(String errorCode) {
@@ -51,6 +66,30 @@ public final class ErrorResponseAssembler {
             case String s when s.endsWith("_CONFLICT") -> "error.conflict.message";
             default -> "error.generic.message";
         };
+    }
+
+    private static String toEntityNameFromErrorCode(String errorCode) {
+        if (errorCode.endsWith("_NOT_FOUND")) {
+            return errorCode.replace("_NOT_FOUND", "").toLowerCase(Locale.ROOT);
+        }
+        if (errorCode.endsWith("_CONFLICT")) {
+            return errorCode.replace("_CONFLICT", "").toLowerCase(Locale.ROOT);
+        }
+        return "resource";
+    }
+
+    private static String toLocalizedMessageOrNull(String key, Object... args) {
+        Locale locale = LocaleContextHolder.getLocale();
+        try {
+            ResourceBundle bundle = ResourceBundle.getBundle(MESSAGES_BASENAME, locale);
+            if (!bundle.containsKey(key)) {
+                return null;
+            }
+            String template = bundle.getString(key);
+            return MessageFormat.format(template, args);
+        } catch (MissingResourceException ex) {
+            return null;
+        }
     }
 
     private static String toLocalizedMessageWithFallback(String key, String fallback, Object... args) {

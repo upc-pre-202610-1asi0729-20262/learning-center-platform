@@ -25,7 +25,7 @@ class ErrorResponseAssemblerTest {
 
         assertEquals(404, response.getStatusCode().value());
         assertEquals("PROFILE_NOT_FOUND", response.getBody().code());
-        assertEquals("Resource not found", response.getBody().message());
+        assertEquals("Profile not found", response.getBody().message());
     }
 
     @Test
@@ -37,7 +37,19 @@ class ErrorResponseAssemblerTest {
 
         assertEquals(409, response.getStatusCode().value());
         assertEquals("USER_CONFLICT", response.getBody().code());
-        assertEquals("Conflicto de recurso", response.getBody().message());
+        assertEquals("El usuario ya existe", response.getBody().message());
+    }
+
+    @Test
+    void toErrorResponseFromApplicationErrorFallsBackToCategoryKeyWhenSpecificIsMissing() {
+        LocaleContextHolder.setLocale(new Locale("es"));
+
+        var error = ApplicationError.notFound("Course", "42");
+        var response = ErrorResponseAssembler.toErrorResponseFromApplicationError(error);
+
+        assertEquals(404, response.getStatusCode().value());
+        assertEquals("COURSE_NOT_FOUND", response.getBody().code());
+        assertEquals("Recurso no encontrado", response.getBody().message());
     }
 }
 
