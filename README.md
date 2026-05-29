@@ -124,3 +124,8 @@ To preserve clarity and domain intent, Lombok is used selectively:
 - Infrastructure/persistence (`*/infrastructure/*`): Lombok can be used more broadly for boilerplate reduction in technical models.
 - REST resources favor Java records over Lombok annotations.
 
+### Logging Convention
+
+- Use Lombok `@Slf4j` for technical logging in application handlers, controllers, filters, and infrastructure services.
+- Keep domain model classes (`*/domain/*`) free from logging framework annotations to preserve domain purity.
+

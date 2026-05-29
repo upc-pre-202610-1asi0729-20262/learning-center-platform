@@ -5,8 +5,7 @@ import com.acme.center.platform.learning.domain.model.events.TutorialCompletedEv
 import com.acme.center.platform.learning.domain.model.queries.GetEnrollmentByIdQuery;
 import com.acme.center.platform.learning.application.queryservices.EnrollmentQueryService;
 import com.acme.center.platform.learning.application.commandservices.StudentCommandService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +13,8 @@ import org.springframework.stereotype.Service;
  * Event handler for the TutorialCompletedEvent.
  */
 @Service
+@Slf4j
 public class TutorialCompletedEventHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TutorialCompletedEventHandler.class);
     private final StudentCommandService studentCommandService;
     private final EnrollmentQueryService enrollmentQueryService;
 
@@ -51,7 +50,7 @@ public class TutorialCompletedEventHandler {
             var result = studentCommandService.handle(updateStudentMetricsOnTutorialCompletedCommand);
 
             if (result instanceof com.acme.center.platform.shared.application.result.Result.Failure(var error)) {
-                LOGGER.warn("Failed to update student metrics for enrollment {}: {}",
+                log.warn("Failed to update student metrics for enrollment {}: {}",
                         studentEnrollment.getId(), error.message());
             }
         }
