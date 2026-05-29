@@ -5,6 +5,84 @@ This document contains API-focused technical stories intended for frontend or mo
 
 Common conventions
 - Base path: `/api/v1`
+- All request and response bodies use `Content-Type: application/json`
+- All protected endpoints require a JWT Bearer token in the `Authorization` header (see TS-ARCH001)
+- Error responses follow a standard schema (see TS-ARCH002)
+
+---
+
+### TS-ARCH001 — Authenticate API Requests with a JWT Bearer Token
+As a frontend developer, I want to include the JWT token in my API requests so that I can access protected endpoints after signing in.
+
+Note: Only `/api/v1/authentication/sign-in` and `/api/v1/authentication/sign-up` are publicly accessible without a token. All other endpoints require authentication.
+
+Acceptance criteria:
+- Scenario: Authenticated request succeeds
+  - Given the client obtained a token via `POST /api/v1/authentication/sign-in`
+  - When the client sends any request to a protected endpoint with the header `Authorization: Bearer <token>`
+  - Then the API processes the request normally and responds with the expected resource.
+- Scenario: Missing token
+  - Given the client sends a request to a protected endpoint without an `Authorization` header
+  - When the API detects no token
+  - Then the API responds `401 Unauthorized` with no further body.
+- Scenario: Expired or invalid token
+  - Given the client sends a request with a malformed or expired `Authorization: Bearer <token>` header
+  - When the API fails to validate the token
+  - Then the API responds `401 Unauthorized` with no further body.
+
+---
+
+### TS-ARCH002 — Handle Standardized API Error Responses
+As a frontend developer, I want all API error responses to follow a consistent schema so that I can implement a single, reusable error-handling layer in my application.
+
+Acceptance criteria:
+- Scenario: Any error response
+  - Given any API request results in an error (4xx or 5xx)
+  - Then the API returns a JSON body with the following attributes:
+    - `code` (String, required) — machine-readable error code (e.g., `VALIDATION_ERROR`, `COURSE_NOT_FOUND`)
+    - `message` (String, required) — human-readable description of the error
+    - `details` (String, optional) — additional context, such as the specific field or reason
+
+Error code to HTTP status mapping:
+| `code` value | HTTP Status | Typical cause |
+|---|---|---|
+| `VALIDATION_ERROR` | `400 Bad Request` | Missing or invalid request field |
+| `*_NOT_FOUND` (e.g., `COURSE_NOT_FOUND`) | `404 Not Found` | Resource does not exist |
+| `*_CONFLICT` (e.g., `USER_CONFLICT`) | `409 Conflict` | Duplicate or conflicting resource |
+| `BUSINESS_RULE_VIOLATION` | `422 Unprocessable Entity` | Operation violates a domain rule |
+| `UNEXPECTED_ERROR` | `500 Internal Server Error` | Unhandled server-side failure |
+
+Example error response body:
+```json
+{
+  "code": "VALIDATION_ERROR",
+  "message": "Validation failed",
+  "details": "Field firstName: is required"
+}
+```
+
+---
+
+### TS-ARCH003 — Request Localized Error Messages
+As a frontend developer, I want to receive error messages in my users' language so that I can display them directly without additional translation.
+
+Supported locales: `en` (English, default), `es` (Spanish)
+
+Acceptance criteria:
+- Scenario: Default locale (English)
+  - Given the client sends a request without an `Accept-Language` header (or with `Accept-Language: en`)
+  - When the API returns an error response
+  - Then the `message` field is in English (e.g., `"Resource not found"`)
+- Scenario: Spanish locale
+  - Given the client sends a request with the header `Accept-Language: es`
+  - When the API returns an error response
+  - Then the `message` field is in Spanish (e.g., `"Recurso no encontrado"`)
+- Scenario: Unsupported locale falls back to English
+  - Given the client sends a request with an unsupported `Accept-Language` value (e.g., `fr`)
+  - When the API returns an error response
+  - Then the `message` field is returned in English.
+
+Note: Only the `message` field in error responses is localized. All resource data fields (course titles, names, etc.) are stored and returned as provided by the client.
 
 ---
 
@@ -14,7 +92,7 @@ As a frontend developer, I want to create a new course through the API so that I
 Acceptance criteria:
 - Scenario: Successful create
   - Given a POST request to `/api/v1/courses` is received with a request body containing the create-course attributes: title, description
-  - When the API validates and persists the course
+  - When the API validates and creates the course
   - Then the API responds with `201 Created` and returns the created course with attributes: id (Long), title (String), description (String).
 - Scenario: Validation error
   - Given a POST request to `/api/v1/courses` is received with missing or invalid create-course attributes (e.g., empty title or description)
@@ -49,7 +127,7 @@ Acceptance criteria:
 - Scenario: No courses found
   - Given a GET request to `/api/v1/courses` is received and there are no courses in the system
   - When the API searches for courses and finds none
-  - Then the API responds `404 Not Found` (per current controller behavior) and returns an appropriate error payload.
+  - Then the API responds `404 Not Found` and returns an error payload.
 
 ---
 
@@ -106,16 +184,16 @@ As a frontend developer, I want to request a new enrollment through the API so t
 Acceptance criteria:
 - Scenario: Successful request
   - Given a POST request is received to `/api/v1/enrollments` with a request body containing the request-enrollment attributes: studentRecordId (UUID string), courseId
-  - When the API validates and persists the enrollment request
+  - When the API validates and creates the enrollment
   - Then the API responds `201 Created` and returns the enrollment with attributes: enrollmentId (Long), studentRecordId (UUID String), courseId (Long), status (String).
 - Scenario: Bad request
   - Given a POST request is received to `/api/v1/enrollments` with missing or invalid enrollment attributes
   - When the API validates the request and detects validation errors
   - Then the API responds `400 Bad Request` and returns an error payload describing validation errors.
-- Scenario: Enrollment not found after creation
-  - Given a POST request is received to `/api/v1/enrollments` is completed but the created enrollment cannot be retrieved (e.g., persistence inconsistency)
-  - When the API attempts to fetch the newly created enrollment and does not find it
-  - Then the API responds `404 Not Found` and returns an error payload — the frontend should treat this as an error.
+- Scenario: Creation failure
+  - Given a POST request is received to `/api/v1/enrollments` and the enrollment cannot be retrieved after creation
+  - When the API attempts to return the newly created enrollment and does not find it
+  - Then the API responds `404 Not Found` and returns an error payload.
 
 ---
 
@@ -153,7 +231,7 @@ As a frontend developer, I want to create user profiles through the API so that 
 Acceptance criteria:
 - Scenario: Successful create
   - Given POST is received to `/api/v1/profiles` with a request body containing the create-profile attributes: firstName, lastName, email, street, number, city, postalCode, country
-  - When the API validates and persists the profile
+  - When the API validates and creates the profile
   - Then the API responds `201 Created` and returns the created profile with attributes: id (Long), fullName (String), email (String), streetAddress (String).
 - Scenario: Validation error
   - Given POST `/api/v1/profiles` with missing or invalid profile attributes
@@ -169,7 +247,7 @@ Acceptance criteria:
 - Get by id
   - Given GET request to `/api/v1/profiles/{profileId}` is received
   - When the API finds the profile
-  - Then the API responds `200 OK` and returns the profile with attributes: id (Long), fullName (String), email (String), streetAddress (String); otherwise `404 Not Found`.
+  - Then the API responds `200 OK` and returns the profile with attributes: id (Long), fullName (String), email (String), streetAddress (String).
   - Given GET `/api/v1/profiles/{profileId}` is received for a non-existent id
   - When the API does not find the profile
   - Then the API responds `404 Not Found` and returns an error payload.
@@ -179,7 +257,7 @@ Acceptance criteria:
   - Then API responds `200 OK` with a list of items containing: id, fullName, email, streetAddress.
   - Given GET `/api/v1/profiles` is received and no profiles exist
   - When the API finds no profiles
-  - Then API responds `404 Not Found` (per controller) and returns an error payload.
+  - Then API responds `404 Not Found` and returns an error payload.
 
 ---
 
@@ -216,7 +294,7 @@ Acceptance criteria:
 - Scenario: Duplicate username or create failure
   - Given a POST `/api/v1/authentication/sign-up` with a username that already exists or the creation fails
   - When the user creation cannot be completed
-  - Then the API responds `400 Bad Request` (per current controller behavior) and returns an error payload explaining the failure.
+  - Then the API responds `409 Conflict` and returns an error payload explaining the failure.
 
 ---
 
