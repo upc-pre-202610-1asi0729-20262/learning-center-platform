@@ -1,10 +1,12 @@
 package com.acme.center.platform.profiles.infrastructure.persistence.jpa.adapters;
 
 import com.acme.center.platform.profiles.domain.model.aggregates.Profile;
+import com.acme.center.platform.profiles.domain.model.events.ProfileCreatedEvent;
 import com.acme.center.platform.profiles.domain.model.valueobjects.EmailAddress;
 import com.acme.center.platform.profiles.domain.repositories.ProfileRepository;
 import com.acme.center.platform.profiles.infrastructure.persistence.jpa.assemblers.ProfilePersistenceAssembler;
 import com.acme.center.platform.profiles.infrastructure.persistence.jpa.repositories.ProfilePersistenceRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -12,14 +14,22 @@ import java.util.Optional;
 
 /**
  * Repository adapter that bridges the domain profile repository port with Spring Data JPA.
+ *
+ * <p>Also acts as the event-publishing boundary: after a brand-new {@link Profile} is
+ * persisted (and the JPA-assigned id is therefore available), a {@link ProfileCreatedEvent}
+ * is dispatched via Spring's {@link ApplicationEventPublisher}.</p>
  */
 @Repository
 public class ProfileRepositoryImpl implements ProfileRepository {
 
     private final ProfilePersistenceRepository profilePersistenceRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public ProfileRepositoryImpl(ProfilePersistenceRepository profilePersistenceRepository) {
+    public ProfileRepositoryImpl(
+            ProfilePersistenceRepository profilePersistenceRepository,
+            ApplicationEventPublisher eventPublisher) {
         this.profilePersistenceRepository = profilePersistenceRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -39,8 +49,15 @@ public class ProfileRepositoryImpl implements ProfileRepository {
 
     @Override
     public Profile save(Profile profile) {
-        var savedProfile = profilePersistenceRepository.save(ProfilePersistenceAssembler.toPersistenceFromDomain(profile));
-        return ProfilePersistenceAssembler.toDomainFromPersistence(savedProfile);
+        boolean isNew = profile.getId() == null;
+        var savedEntity = profilePersistenceRepository.save(ProfilePersistenceAssembler.toPersistenceFromDomain(profile));
+        var savedProfile = ProfilePersistenceAssembler.toDomainFromPersistence(savedEntity);
+        if (isNew) {
+            savedProfile.onCreated();
+            savedProfile.domainEvents().forEach(eventPublisher::publishEvent);
+            savedProfile.clearDomainEvents();
+        }
+        return savedProfile;
     }
 
     @Override
@@ -48,5 +65,7 @@ public class ProfileRepositoryImpl implements ProfileRepository {
         return profilePersistenceRepository.countByEmailAddress(emailAddress) > 0;
     }
 }
+
+
 
 

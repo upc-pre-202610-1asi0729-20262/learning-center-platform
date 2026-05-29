@@ -1,15 +1,22 @@
 package com.acme.center.platform.profiles.domain.model.aggregates;
 
 import com.acme.center.platform.profiles.domain.model.commands.CreateProfileCommand;
+import com.acme.center.platform.profiles.domain.model.events.ProfileCreatedEvent;
 import com.acme.center.platform.profiles.domain.model.valueobjects.EmailAddress;
 import com.acme.center.platform.profiles.domain.model.valueobjects.PersonName;
 import com.acme.center.platform.profiles.domain.model.valueobjects.StreetAddress;
+import com.acme.center.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot;
+
 import java.util.Objects;
 
 /**
  * Profile aggregate root.
+ *
+ * <p>Extends {@link AbstractDomainAggregateRoot} to gain domain event registration
+ * support. No JPA or persistence annotation is present here — those concerns live
+ * exclusively in {@code ProfilePersistenceEntity}.</p>
  */
-public class Profile {
+public class Profile extends AbstractDomainAggregateRoot<Profile> {
 
     private Long id;
     private PersonName name;
@@ -130,6 +137,17 @@ public class Profile {
      */
     public void updateEmailAddress(String email) {
         this.emailAddress = new EmailAddress(email);
+    }
+
+    /**
+     * Signals that this profile has just been created and persisted.
+     *
+     * <p>Called by the repository adapter after the JPA identity has been assigned.
+     * Registers a {@link ProfileCreatedEvent} so the infrastructure can publish it
+     * to interested subscribers in other bounded contexts.</p>
+     */
+    public void onCreated() {
+        registerDomainEvent(ProfileCreatedEvent.from(this));
     }
 
 }

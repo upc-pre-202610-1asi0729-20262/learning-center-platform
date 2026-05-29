@@ -1,5 +1,6 @@
 package com.acme.center.platform.learning.application.commandservices;
 
+import com.acme.center.platform.learning.domain.model.commands.CreateStudentByProfileIdCommand;
 import com.acme.center.platform.learning.domain.model.commands.CreateStudentCommand;
 import com.acme.center.platform.learning.domain.model.commands.UpdateStudentMetricsOnTutorialCompletedCommand;
 import com.acme.center.platform.learning.domain.model.valueobjects.AcmeStudentRecordId;
@@ -16,6 +17,15 @@ public interface StudentCommandService {
      * @return AcmeStudentRecordId generated for the student.
      */
     AcmeStudentRecordId handle(CreateStudentCommand command);
+
+    /**
+     * handle
+     * This method is used to handle the CreateStudentByProfileIdCommand.
+     * Triggered reactively when a {@code ProfileCreatedEvent} is received.
+     * @param command the CreateStudentByProfileIdCommand containing the profile id.
+     * @return AcmeStudentRecordId generated for the student.
+     */
+    AcmeStudentRecordId handle(CreateStudentByProfileIdCommand command);
     /**
      * handle
      * This method is used to handle the UpdateStudentMetricsOnTutorialCompletedCommand.
