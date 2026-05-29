@@ -28,16 +28,19 @@ public class ProfileCommandServiceImpl implements ProfileCommandService {
     // inherited javadoc
     @Override
     public Result<Profile, ApplicationError> handle(CreateProfileCommand command) {
-        var emailAddress = new EmailAddress(command.email());
-        if (profileRepository.existsByEmailAddress(emailAddress)) {
-            return Result.failure(ApplicationError.conflict(
-                    "Profile",
-                    "A profile with email address '%s' already exists".formatted(command.email())));
-        }
-        var profile = new Profile(command);
         try {
+            var emailAddress = new EmailAddress(command.email());
+            if (profileRepository.existsByEmailAddress(emailAddress)) {
+                return Result.failure(ApplicationError.conflict(
+                        "Profile",
+                        "A profile with email address '%s' already exists".formatted(command.email())));
+            }
+
+            var profile = new Profile(command);
             var savedProfile = profileRepository.save(profile);
             return Result.success(savedProfile);
+        } catch (IllegalArgumentException e) {
+            return Result.failure(ApplicationError.validationError("Profile", e.getMessage()));
         } catch (Exception e) {
             return Result.failure(ApplicationError.unexpected(
                     "Profile creation",

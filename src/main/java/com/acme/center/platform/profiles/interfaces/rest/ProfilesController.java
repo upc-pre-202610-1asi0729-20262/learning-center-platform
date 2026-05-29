@@ -8,17 +8,18 @@ import com.acme.center.platform.profiles.interfaces.rest.resources.CreateProfile
 import com.acme.center.platform.profiles.interfaces.rest.resources.ProfileResource;
 import com.acme.center.platform.profiles.interfaces.rest.transform.CreateProfileCommandFromResourceAssembler;
 import com.acme.center.platform.profiles.interfaces.rest.transform.ProfileResourceFromEntityAssembler;
+import com.acme.center.platform.shared.application.result.ApplicationError;
+import com.acme.center.platform.shared.application.result.Result;
 import com.acme.center.platform.shared.interfaces.rest.transform.ErrorResponseAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * ProfilesController
@@ -51,18 +52,16 @@ public class ProfilesController {
             @ApiResponse(responseCode = "201", description = "Profile created"),
             @ApiResponse(responseCode = "400", description = "Bad request"),
             @ApiResponse(responseCode = "409", description = "Conflict - profile already exists")})
-    public ResponseEntity<?> createProfile(@RequestBody CreateProfileResource resource) {
+    public ResponseEntity<?> createProfile(@Valid @RequestBody CreateProfileResource resource) {
         var createProfileCommand = CreateProfileCommandFromResourceAssembler.toCommandFromResource(resource);
         var result = profileCommandService.handle(createProfileCommand);
 
-        if (result instanceof com.acme.center.platform.shared.application.result.Result.Success<?, ?> success) {
-            var profile = (com.acme.center.platform.profiles.domain.model.aggregates.Profile) success.value();
+        if (result instanceof Result.Success(var profile)) {
             var profileResource = ProfileResourceFromEntityAssembler.toResourceFromEntity(profile);
             return new ResponseEntity<>(profileResource, HttpStatus.CREATED);
         }
 
-        if (result instanceof com.acme.center.platform.shared.application.result.Result.Failure<?, ?> failure) {
-            var error = (com.acme.center.platform.shared.application.result.ApplicationError) failure.error();
+        if (result instanceof Result.Failure(var error)) {
             return ErrorResponseAssembler.toErrorResponseFromApplicationError(error);
         }
 
@@ -79,10 +78,13 @@ public class ProfilesController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Profile found"),
             @ApiResponse(responseCode = "404", description = "Profile not found")})
-    public ResponseEntity<ProfileResource> getProfileById(@PathVariable Long profileId) {
+    public ResponseEntity<?> getProfileById(@PathVariable Long profileId) {
         var getProfileByIdQuery = new GetProfileByIdQuery(profileId);
         var profile = profileQueryService.handle(getProfileByIdQuery);
-        if (profile.isEmpty()) return ResponseEntity.notFound().build();
+        if (profile.isEmpty()) {
+            var error = ApplicationError.notFound("Profile", profileId.toString());
+            return ErrorResponseAssembler.toErrorResponseFromApplicationError(error);
+        }
         var profileEntity = profile.get();
         var profileResource = ProfileResourceFromEntityAssembler.toResourceFromEntity(profileEntity);
         return ResponseEntity.ok(profileResource);
@@ -97,9 +99,12 @@ public class ProfilesController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Profiles found"),
             @ApiResponse(responseCode = "404", description = "Profiles not found")})
-    public ResponseEntity<List<ProfileResource>> getAllProfiles() {
+    public ResponseEntity<?> getAllProfiles() {
         var profiles = profileQueryService.handle(new GetAllProfilesQuery());
-        if (profiles.isEmpty()) return ResponseEntity.notFound().build();
+        if (profiles.isEmpty()) {
+            var error = ApplicationError.notFound("Profile", "all");
+            return ErrorResponseAssembler.toErrorResponseFromApplicationError(error);
+        }
         var profileResources = profiles.stream()
                 .map(ProfileResourceFromEntityAssembler::toResourceFromEntity)
                 .toList();
