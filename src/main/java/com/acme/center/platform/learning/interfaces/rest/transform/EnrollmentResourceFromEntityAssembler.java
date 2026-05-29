@@ -14,6 +14,10 @@ public class EnrollmentResourceFromEntityAssembler {
      * @return The {@link EnrollmentResource} resource that results from the conversion.
      */
     public static EnrollmentResource toResourceFromEntity(Enrollment entity) {
-        return new EnrollmentResource(entity.getId(), entity.getAcmeStudentRecordId().studentRecordId(), entity.getCourse().getId(), entity.getStatus());
+        return new EnrollmentResource(
+                entity.getId(),
+                entity.getAcmeStudentRecordId().studentRecordId(),
+                entity.getCourse().getId(),
+                entity.getStatus().name().toLowerCase());
     }
 }

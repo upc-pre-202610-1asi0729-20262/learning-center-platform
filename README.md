@@ -105,3 +105,12 @@ parent.
 To prevent this, the project POM contains empty overrides for these elements.
 If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
 
+### Layering and Persistence Boundaries
+
+The three bounded contexts now follow a clean separation between domain and persistence concerns:
+
+- Domain aggregates, entities, and value objects live under each context `domain` package and are persistence-agnostic.
+- Domain repository ports live under each context `domain/repositories` package.
+- Spring Data JPA repositories now target persistence entities only and are named with `*PersistenceRepository`.
+- Repository adapters in infrastructure bridge domain repository ports and persistence repositories.
+- Shared mixed JPA/domain bases were retired. Domain aggregates use `shared/domain/model/aggregates/AbstractDomainAggregateRoot`, while persistence entities use infrastructure persistence bases such as `shared/infrastructure/persistence/jpa/entities/AuditableAbstractPersistenceEntity` when needed.

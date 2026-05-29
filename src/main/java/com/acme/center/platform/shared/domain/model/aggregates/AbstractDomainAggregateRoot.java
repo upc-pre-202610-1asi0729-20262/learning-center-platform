@@ -13,9 +13,9 @@ import java.util.Collection;
  * pulling in any JPA or persistence concern. Identity and auditing are
  * intentionally left to the infrastructure layer.</p>
  *
- * <p>All bounded-context domain aggregate roots should extend this class
- * instead of using {@link AuditableAbstractAggregateRoot}, which mixes
- * JPA auditing into the domain.</p>
+ * <p>All bounded-context domain aggregate roots should extend this class.
+ * Persistence-specific behavior belongs to dedicated infrastructure
+ * persistence entities.</p>
  *
  * @param <T> the concrete aggregate root type
  */
@@ -53,4 +53,3 @@ public abstract class AbstractDomainAggregateRoot<T extends AbstractDomainAggreg
         super.clearDomainEvents();
     }
 }
-

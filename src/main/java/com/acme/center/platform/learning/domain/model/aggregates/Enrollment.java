@@ -5,31 +5,21 @@ import com.acme.center.platform.learning.domain.model.valueobjects.AcmeStudentRe
 import com.acme.center.platform.learning.domain.model.valueobjects.EnrollmentStatus;
 import com.acme.center.platform.learning.domain.model.valueobjects.ProgressRecord;
 import com.acme.center.platform.learning.domain.model.valueobjects.TutorialId;
-import com.acme.center.platform.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.acme.center.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot;
 import lombok.Getter;
+import lombok.Setter;
 
-@Entity
-public class Enrollment extends AuditableAbstractAggregateRoot<Enrollment> {
-    @Getter
-    @Embedded
+@Getter
+@Setter
+public class Enrollment extends AbstractDomainAggregateRoot<Enrollment> {
+    private Long id;
     private AcmeStudentRecordId acmeStudentRecordId;
-
-    @Getter
-    @ManyToOne
-    @JoinColumn(name = "course_id")
     private Course course;
-
-    @Embedded
     private ProgressRecord progressRecord;
-
     private EnrollmentStatus status;
 
     public Enrollment() {
-        // Required by JPA
+        // Required for reconstruction
     }
 
     public Enrollment(AcmeStudentRecordId acmeStudentRecordId, Course course) {
@@ -42,17 +32,14 @@ public class Enrollment extends AuditableAbstractAggregateRoot<Enrollment> {
     public void confirm() {
         this.status = EnrollmentStatus.CONFIRMED;
         this.progressRecord.initializeProgressRecord(this, course.getLearningPath());
-        // this.registerEvent(new EnrollmentConfirmedEvent(this));
     }
 
     public void reject() {
         this.status = EnrollmentStatus.REJECTED;
-        // this.registerEvent(new EnrollmentRejectedEvent(this));
     }
 
     public void cancel() {
         this.status = EnrollmentStatus.CANCELLED;
-        // this.registerEvent(new EnrollmentCancelledEvent(this));
     }
 
     public boolean isConfirmed() {
@@ -67,7 +54,7 @@ public class Enrollment extends AuditableAbstractAggregateRoot<Enrollment> {
         return this.status == EnrollmentStatus.CANCELLED;
     }
 
-    public String getStatus() {
+    public String getStatusName() {
         return this.status.name().toLowerCase();
     }
 
@@ -77,7 +64,6 @@ public class Enrollment extends AuditableAbstractAggregateRoot<Enrollment> {
 
     public void completeTutorial(TutorialId tutorialId) {
         this.progressRecord.completeTutorial(tutorialId, course.getLearningPath());
-        // Publish a Tutorial Completed Event
-        this.registerEvent(new TutorialCompletedEvent(this, this.getId(), tutorialId));
+        this.registerDomainEvent(new TutorialCompletedEvent(this, this.getId(), tutorialId));
     }
 }

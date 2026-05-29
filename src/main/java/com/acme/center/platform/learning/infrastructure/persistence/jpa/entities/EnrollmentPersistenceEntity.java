@@ -1,0 +1,48 @@
+package com.acme.center.platform.learning.infrastructure.persistence.jpa.entities;
+
+import com.acme.center.platform.learning.domain.model.valueobjects.AcmeStudentRecordId;
+import com.acme.center.platform.learning.domain.model.valueobjects.EnrollmentStatus;
+import com.acme.center.platform.shared.infrastructure.persistence.jpa.entities.AuditableAbstractPersistenceEntity;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * JPA persistence entity for enrollments.
+ */
+@Entity
+@Table(name = "enrollments")
+@Getter
+@Setter
+@NoArgsConstructor
+public class EnrollmentPersistenceEntity extends AuditableAbstractPersistenceEntity {
+
+    @Embedded
+    @AttributeOverride(name = "studentRecordId", column = @Column(name = "acme_student_id", nullable = false))
+    private AcmeStudentRecordId acmeStudentRecordId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "course_id", nullable = false)
+    private CoursePersistenceEntity course;
+
+    @OneToMany(mappedBy = "enrollment", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
+    private List<ProgressRecordItemPersistenceEntity> progressRecordItems = new ArrayList<>();
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private EnrollmentStatus status;
+}

@@ -5,6 +5,6 @@ import com.acme.center.platform.learning.interfaces.rest.resources.StudentResour
 
 public class StudentResourceFromEntityAssembler {
     public static StudentResource toResourceFromEntity(Student entity) {
-        return new StudentResource(entity.getStudentRecordId(), entity.getProfileId(), entity.getTotalCompletedCourses(), entity.getTotalCompletedTutorials());
+        return new StudentResource(entity.getStudentRecordId(), entity.getProfileIdValue(), entity.getTotalCompletedCourses(), entity.getTotalCompletedTutorials());
     }
 }
