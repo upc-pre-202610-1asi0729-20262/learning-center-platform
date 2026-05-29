@@ -12,10 +12,12 @@ import org.apache.logging.log4j.util.Strings;
  * Course aggregate root.
  */
 @Getter
-@Setter
 public class Course extends AbstractDomainAggregateRoot<Course> {
+    @Setter
     private Long id;
+    @Setter
     private String title;
+    @Setter
     private String description;
     private LearningPath learningPath;
 

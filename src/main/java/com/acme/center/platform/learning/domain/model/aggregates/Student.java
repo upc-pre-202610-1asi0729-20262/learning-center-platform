@@ -11,11 +11,14 @@ import lombok.Setter;
  * Student aggregate root.
  */
 @Getter
-@Setter
 public class Student extends AbstractDomainAggregateRoot<Student> {
+    @Setter
     private Long id;
+    @Setter
     private AcmeStudentRecordId acmeStudentRecordId;
+    @Setter
     private ProfileId profileId;
+    @Setter
     private StudentPerformanceMetricSet performanceMetricSet;
 
     public Student() {

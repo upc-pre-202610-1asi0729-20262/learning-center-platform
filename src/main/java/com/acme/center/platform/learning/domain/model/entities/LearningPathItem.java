@@ -9,11 +9,14 @@ import lombok.Setter;
  * LearningPathItem domain entity.
  */
 @Getter
-@Setter
 public class LearningPathItem {
+    @Setter
     private Long id;
+    @Setter
     private Course course;
+    @Setter
     private TutorialId tutorialId;
+    @Setter
     private LearningPathItem nextItem;
 
     public LearningPathItem(Course course, TutorialId tutorialId, LearningPathItem nextItem) {

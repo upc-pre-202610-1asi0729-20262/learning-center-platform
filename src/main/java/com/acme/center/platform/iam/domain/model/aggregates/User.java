@@ -13,12 +13,15 @@ import java.util.Set;
  * User aggregate root.
  */
 @Getter
-@Setter
 public class User extends AbstractDomainAggregateRoot<User> {
 
+    @Setter
     private Long id;
+    @Setter
     private String username;
+    @Setter
     private String password;
+    @Setter
     private Set<Role> roles;
 
     public User() {

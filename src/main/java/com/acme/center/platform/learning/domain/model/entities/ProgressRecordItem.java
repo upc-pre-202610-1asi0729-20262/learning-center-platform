@@ -16,13 +16,18 @@ import java.util.Objects;
  * Represents a record of a student's progress on a tutorial.
  */
 @Getter
-@Setter
 public class ProgressRecordItem {
+    @Setter
     private Long id;
+    @Setter
     private Enrollment enrollment;
+    @Setter
     private TutorialId tutorialId;
+    @Setter
     private ProgressStatus status;
+    @Setter
     private Date statedAt;
+    @Setter
     private Date completedAt;
 
     public ProgressRecordItem(Enrollment enrollment, TutorialId tutorialId) {

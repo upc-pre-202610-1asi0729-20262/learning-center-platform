@@ -2,8 +2,11 @@ package com.acme.center.platform.iam.domain.model.entities;
 
 import com.acme.center.platform.iam.domain.model.valueobjects.Roles;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.With;
 
 import java.util.List;
@@ -11,10 +14,13 @@ import java.util.List;
 /**
  * Role domain entity.
  */
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @With
+@EqualsAndHashCode
+@ToString
 public class Role {
     private Long id;
     private Roles name;

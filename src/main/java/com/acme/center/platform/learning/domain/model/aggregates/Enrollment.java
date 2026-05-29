@@ -10,12 +10,16 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
 public class Enrollment extends AbstractDomainAggregateRoot<Enrollment> {
+    @Setter
     private Long id;
+    @Setter
     private AcmeStudentRecordId acmeStudentRecordId;
+    @Setter
     private Course course;
+    @Setter
     private ProgressRecord progressRecord;
+    @Setter
     private EnrollmentStatus status;
 
     public Enrollment() {
