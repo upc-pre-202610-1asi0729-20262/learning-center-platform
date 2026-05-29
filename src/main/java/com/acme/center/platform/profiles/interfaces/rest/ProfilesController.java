@@ -9,8 +9,8 @@ import com.acme.center.platform.profiles.interfaces.rest.resources.ProfileResour
 import com.acme.center.platform.profiles.interfaces.rest.transform.CreateProfileCommandFromResourceAssembler;
 import com.acme.center.platform.profiles.interfaces.rest.transform.ProfileResourceFromEntityAssembler;
 import com.acme.center.platform.shared.application.result.ApplicationError;
-import com.acme.center.platform.shared.application.result.Result;
 import com.acme.center.platform.shared.interfaces.rest.transform.ErrorResponseAssembler;
+import com.acme.center.platform.shared.interfaces.rest.transform.ResponseEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -56,16 +56,11 @@ public class ProfilesController {
         var createProfileCommand = CreateProfileCommandFromResourceAssembler.toCommandFromResource(resource);
         var result = profileCommandService.handle(createProfileCommand);
 
-        if (result instanceof Result.Success(var profile)) {
-            var profileResource = ProfileResourceFromEntityAssembler.toResourceFromEntity(profile);
-            return new ResponseEntity<>(profileResource, HttpStatus.CREATED);
-        }
-
-        if (result instanceof Result.Failure(var error)) {
-            return ErrorResponseAssembler.toErrorResponseFromApplicationError(error);
-        }
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        return ResponseEntityAssembler.toResponseEntityFromResult(
+                result,
+                ProfileResourceFromEntityAssembler::toResourceFromEntity,
+                HttpStatus.CREATED
+        );
     }
 
     /**
