@@ -1,7 +1,7 @@
 package com.acme.center.platform.shared.interfaces.rest.util;
 
 import com.acme.center.platform.shared.application.result.ApplicationError;
-import com.acme.center.platform.shared.interfaces.rest.dto.ErrorResponseDto;
+import com.acme.center.platform.shared.interfaces.rest.resources.ErrorResource;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,12 +22,12 @@ public final class HttpErrorMapper {
      * Automatically selects the correct HTTP status code based on the error code.
      *
      * @param error the ApplicationError to map
-     * @return a ResponseEntity with the appropriate HTTP status and error DTO
+     * @return a ResponseEntity with the appropriate HTTP status and error resource
      */
-    public static ResponseEntity<ErrorResponseDto> toErrorResponse(ApplicationError error) {
+    public static ResponseEntity<ErrorResource> toErrorResponse(ApplicationError error) {
         HttpStatus status = mapErrorCodeToStatus(error.code());
-        ErrorResponseDto dto = new ErrorResponseDto(error.code(), error.message(), error.details());
-        return new ResponseEntity<>(dto, status);
+        ErrorResource resource = new ErrorResource(error.code(), error.message(), error.details());
+        return new ResponseEntity<>(resource, status);
     }
 
     /**
@@ -38,24 +38,12 @@ public final class HttpErrorMapper {
      */
     public static HttpStatus mapErrorCodeToStatus(String errorCode) {
         return switch (errorCode) {
-            // Validation errors → 400 Bad Request
             case "VALIDATION_ERROR" -> HttpStatus.BAD_REQUEST;
-
-            // Not found errors → 404 Not Found
             case String s when s.endsWith("_NOT_FOUND") -> HttpStatus.NOT_FOUND;
-
-            // Business rule violations → 422 Unprocessable Entity
             case "BUSINESS_RULE_VIOLATION" -> HttpStatus.UNPROCESSABLE_ENTITY;
-
-            // Conflict errors → 409 Conflict
             case String s when s.endsWith("_CONFLICT") -> HttpStatus.CONFLICT;
-
-            // Unexpected errors → 500 Internal Server Error
             case "UNEXPECTED_ERROR" -> HttpStatus.INTERNAL_SERVER_ERROR;
-
-            // Default fallback
             default -> HttpStatus.INTERNAL_SERVER_ERROR;
         };
     }
 }
-
