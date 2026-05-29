@@ -8,12 +8,14 @@ import com.acme.center.platform.learning.interfaces.rest.resources.CreateStudent
 import com.acme.center.platform.learning.interfaces.rest.resources.StudentResource;
 import com.acme.center.platform.learning.interfaces.rest.transform.CreateStudentCommandFromResourceAssembler;
 import com.acme.center.platform.learning.interfaces.rest.transform.StudentResourceFromEntityAssembler;
+import com.acme.center.platform.shared.application.result.ApplicationError;
+import com.acme.center.platform.shared.application.result.Result;
+import com.acme.center.platform.shared.interfaces.rest.transform.ResponseEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,16 +54,21 @@ public class StudentsController {
             @ApiResponse(responseCode = "201", description = "Student created"),
             @ApiResponse(responseCode = "400", description = "Bad request"),
             @ApiResponse(responseCode = "404", description = "Student not found")})
-    public ResponseEntity<StudentResource> createStudent(CreateStudentResource resource) {
+    public ResponseEntity<?> createStudent(CreateStudentResource resource) {
         var createStudentCommand = CreateStudentCommandFromResourceAssembler.toCommandFromResource(resource);
-        var acmeStudentRecordId = studentCommandService.handle(createStudentCommand);
-        if (acmeStudentRecordId.studentRecordId().isEmpty()) return ResponseEntity.badRequest().build();
-        var getStudentByAcmeStudentRecordIdQuery = new GetStudentByAcmeStudentRecordIdQuery(acmeStudentRecordId);
-        var student = studentQueryService.handle(getStudentByAcmeStudentRecordIdQuery);
-        if (student.isEmpty()) return ResponseEntity.notFound().build();
-        var createdStudent = student.get();
-        var studentResource = StudentResourceFromEntityAssembler.toResourceFromEntity(createdStudent);
-        return new ResponseEntity<>(studentResource, HttpStatus.CREATED);
+        var result = studentCommandService.handle(createStudentCommand)
+                .flatMap(studentRecordId -> studentQueryService.handle(new GetStudentByAcmeStudentRecordIdQuery(studentRecordId))
+                        .<Result<com.acme.center.platform.learning.domain.model.aggregates.Student, ApplicationError>>
+                                map(Result::success)
+                        .orElseGet(() -> Result.failure(
+                                ApplicationError.notFound("Student", studentRecordId.studentRecordId())
+                        )));
+
+        return ResponseEntityAssembler.toResponseEntityFromResult(
+                result,
+                StudentResourceFromEntityAssembler::toResourceFromEntity,
+                HttpStatus.CREATED
+        );
     }
 
     /**

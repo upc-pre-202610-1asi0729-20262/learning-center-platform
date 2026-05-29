@@ -11,6 +11,10 @@ import com.acme.center.platform.learning.interfaces.rest.resources.UpdateCourseR
 import com.acme.center.platform.learning.interfaces.rest.transform.CourseResourceFromEntityAssembler;
 import com.acme.center.platform.learning.interfaces.rest.transform.CreateCourseCommandFromResourceAssembler;
 import com.acme.center.platform.learning.interfaces.rest.transform.UpdateCourseCommandFromResourceAssembler;
+import com.acme.center.platform.shared.application.result.ApplicationError;
+import com.acme.center.platform.shared.application.result.Result;
+import com.acme.center.platform.shared.interfaces.rest.resources.MessageResource;
+import com.acme.center.platform.shared.interfaces.rest.transform.ResponseEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -60,16 +64,19 @@ public class CoursesController {
             @ApiResponse(responseCode = "201", description = "Course created"),
             @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "404", description = "Course not found")})
-    public ResponseEntity<CourseResource> createCourse(@RequestBody CreateCourseResource resource) {
+    public ResponseEntity<?> createCourse(@RequestBody CreateCourseResource resource) {
         var createCourseCommand = CreateCourseCommandFromResourceAssembler.toCommandFromResource(resource);
-        var courseId = courseCommandService.handle(createCourseCommand);
-        if (courseId == null || courseId == 0L) return ResponseEntity.badRequest().build();
-        var getCourseByIdQuery = new GetCourseByIdQuery(courseId);
-        var course = courseQueryService.handle(getCourseByIdQuery);
-        if (course.isEmpty()) return ResponseEntity.notFound().build();
-        var courseEntity = course.get();
-        var courseResource = CourseResourceFromEntityAssembler.toResourceFromEntity(courseEntity);
-        return new ResponseEntity<>(courseResource, HttpStatus.CREATED);
+        var result = courseCommandService.handle(createCourseCommand)
+                .flatMap(courseId -> courseQueryService.handle(new GetCourseByIdQuery(courseId))
+                        .<Result<com.acme.center.platform.learning.domain.model.aggregates.Course, ApplicationError>>
+                                map(Result::success)
+                        .orElseGet(() -> Result.failure(ApplicationError.notFound("Course", courseId.toString()))));
+
+        return ResponseEntityAssembler.toResponseEntityFromResult(
+                result,
+                CourseResourceFromEntityAssembler::toResourceFromEntity,
+                HttpStatus.CREATED
+        );
     }
 
     /**
@@ -123,13 +130,14 @@ public class CoursesController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Course updated"),
             @ApiResponse(responseCode = "404", description = "Course not found")})
-    public ResponseEntity<CourseResource> updateCourse(@PathVariable Long courseId, @RequestBody UpdateCourseResource resource) {
+    public ResponseEntity<?> updateCourse(@PathVariable Long courseId, @RequestBody UpdateCourseResource resource) {
         var updateCourseCommand = UpdateCourseCommandFromResourceAssembler.toCommandFromResource(courseId, resource);
-        var updatedCourse = courseCommandService.handle(updateCourseCommand);
-        if (updatedCourse.isEmpty()) return ResponseEntity.notFound().build();
-        var updatedCourseEntity = updatedCourse.get();
-        var updatedCourseResource = CourseResourceFromEntityAssembler.toResourceFromEntity(updatedCourseEntity);
-        return ResponseEntity.ok(updatedCourseResource);
+        var result = courseCommandService.handle(updateCourseCommand);
+        return ResponseEntityAssembler.toResponseEntityFromResult(
+                result,
+                CourseResourceFromEntityAssembler::toResourceFromEntity,
+                HttpStatus.OK
+        );
     }
 
     /**
@@ -145,7 +153,12 @@ public class CoursesController {
             @ApiResponse(responseCode = "404", description = "Course not found")})
     public ResponseEntity<?> deleteCourse(@PathVariable Long courseId) {
         var deleteCourseCommand = new DeleteCourseCommand(courseId);
-        courseCommandService.handle(deleteCourseCommand);
-        return ResponseEntity.ok("Course with given id successfully deleted");
+        var result = courseCommandService.handle(deleteCourseCommand)
+                .map(id -> new MessageResource("Course with given id successfully deleted"));
+        return ResponseEntityAssembler.toResponseEntityFromResult(
+                result,
+                message -> message,
+                HttpStatus.OK
+        );
     }
 }

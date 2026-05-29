@@ -7,6 +7,9 @@ import com.acme.center.platform.learning.application.commandservices.CourseComma
 import com.acme.center.platform.learning.application.queryservices.CourseQueryService;
 import com.acme.center.platform.learning.interfaces.rest.resources.LearningPathItemResource;
 import com.acme.center.platform.learning.interfaces.rest.transform.LearningPathItemResourceFromEntityAssembler;
+import com.acme.center.platform.shared.application.result.ApplicationError;
+import com.acme.center.platform.shared.application.result.Result;
+import com.acme.center.platform.shared.interfaces.rest.transform.ResponseEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -54,13 +57,21 @@ public class CourseLearningPathController {
             @ApiResponse(responseCode = "201", description = "Tutorial added to the learning path of the course"),
             @ApiResponse(responseCode = "404", description = "Course or tutorial not found")
     })
-    public ResponseEntity<LearningPathItemResource> addTutorialToCourseLearningPath(@PathVariable Long courseId, @PathVariable Long tutorialId) {
-        courseCommandService.handle(new AddTutorialToCourseLearningPathCommand(new TutorialId(tutorialId), courseId));
-        var getLearningPathItemByCourseIdAndTutorialIdQuery = new GetLearningPathItemByCourseIdAndTutorialIdQuery(courseId, new TutorialId(tutorialId));
-        var learningPathItem = courseQueryService.handle(getLearningPathItemByCourseIdAndTutorialIdQuery);
-        if (learningPathItem.isEmpty()) return ResponseEntity.notFound().build();
-        var learningPathItemEntity = learningPathItem.get();
-        var learningPathItemResource = LearningPathItemResourceFromEntityAssembler.toResourceFromEntity(learningPathItemEntity);
-        return new ResponseEntity<>(learningPathItemResource, HttpStatus.CREATED);
+    public ResponseEntity<?> addTutorialToCourseLearningPath(@PathVariable Long courseId, @PathVariable Long tutorialId) {
+        var command = new AddTutorialToCourseLearningPathCommand(new TutorialId(tutorialId), courseId);
+        var result = courseCommandService.handle(command)
+                .flatMap(savedCourseId -> courseQueryService.handle(new GetLearningPathItemByCourseIdAndTutorialIdQuery(
+                                savedCourseId, new TutorialId(tutorialId)))
+                        .<Result<com.acme.center.platform.learning.domain.model.entities.LearningPathItem, ApplicationError>>
+                                map(Result::success)
+                        .orElseGet(() -> Result.failure(
+                                ApplicationError.notFound("LearningPathItem", tutorialId.toString())
+                        )));
+
+        return ResponseEntityAssembler.toResponseEntityFromResult(
+                result,
+                LearningPathItemResourceFromEntityAssembler::toResourceFromEntity,
+                HttpStatus.CREATED
+        );
     }
 }

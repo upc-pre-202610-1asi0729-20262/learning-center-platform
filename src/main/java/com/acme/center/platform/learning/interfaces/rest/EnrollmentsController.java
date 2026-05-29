@@ -11,11 +11,15 @@ import com.acme.center.platform.learning.interfaces.rest.resources.EnrollmentRes
 import com.acme.center.platform.learning.interfaces.rest.resources.RequestEnrollmentResource;
 import com.acme.center.platform.learning.interfaces.rest.transform.EnrollmentResourceFromEntityAssembler;
 import com.acme.center.platform.learning.interfaces.rest.transform.RequestEnrollmentCommandFromResourceAssembler;
+import com.acme.center.platform.shared.application.result.ApplicationError;
+import com.acme.center.platform.shared.application.result.Result;
 import com.acme.center.platform.shared.interfaces.rest.resources.MessageResource;
+import com.acme.center.platform.shared.interfaces.rest.transform.ResponseEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,17 +60,22 @@ public class EnrollmentsController {
             @ApiResponse(responseCode = "201", description = "Enrollment requested successfully"),
             @ApiResponse(responseCode = "400", description = "Bad request"),
             @ApiResponse(responseCode = "404", description = "Enrollment not found")})
-    public ResponseEntity<EnrollmentResource> requestEnrollment(@RequestBody RequestEnrollmentResource resource) {
+    public ResponseEntity<?> requestEnrollment(@RequestBody RequestEnrollmentResource resource) {
         var requestEnrollmentCommand = RequestEnrollmentCommandFromResourceAssembler.toCommandFromResource(resource);
-        var enrollmentId = enrollmentCommandService.handle(requestEnrollmentCommand);
-        if (enrollmentId == null || enrollmentId.equals(0L)) return ResponseEntity.badRequest().build();
-        var getEnrollmentByAcmeStudentRecordIdAndCourseIdQuery = new GetEnrollmentByAcmeStudentRecordIdAndCourseIdQuery(
-                requestEnrollmentCommand.studentRecordId(), requestEnrollmentCommand.courseId());
-        var enrollment = enrollmentQueryService.handle(getEnrollmentByAcmeStudentRecordIdAndCourseIdQuery);
-        if (enrollment.isEmpty()) return ResponseEntity.notFound().build();
-        var requestedEnrollment = enrollment.get();
-        var enrollmentResource = EnrollmentResourceFromEntityAssembler.toResourceFromEntity(requestedEnrollment);
-        return ResponseEntity.ok(enrollmentResource);
+        var result = enrollmentCommandService.handle(requestEnrollmentCommand)
+                .flatMap(enrollmentId -> enrollmentQueryService.handle(new GetEnrollmentByAcmeStudentRecordIdAndCourseIdQuery(
+                                requestEnrollmentCommand.studentRecordId(), requestEnrollmentCommand.courseId()))
+                        .<Result<com.acme.center.platform.learning.domain.model.aggregates.Enrollment, ApplicationError>>
+                                map(Result::success)
+                        .orElseGet(() -> Result.failure(
+                                ApplicationError.notFound("Enrollment", enrollmentId.toString())
+                        )));
+
+        return ResponseEntityAssembler.toResponseEntityFromResult(
+                result,
+                EnrollmentResourceFromEntityAssembler::toResourceFromEntity,
+                HttpStatus.OK
+        );
     }
 
     /**
@@ -80,11 +89,11 @@ public class EnrollmentsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Enrollment confirmed successfully"),
             @ApiResponse(responseCode = "400", description = "Bad request")})
-    public ResponseEntity<MessageResource> confirmEnrollment(@PathVariable Long enrollmentId) {
+    public ResponseEntity<?> confirmEnrollment(@PathVariable Long enrollmentId) {
         var confirmEnrollmentCommand = new ConfirmEnrollmentCommand(enrollmentId);
-        var confirmedEnrollment = enrollmentCommandService.handle(confirmEnrollmentCommand);
-        if (confirmedEnrollment == null || confirmedEnrollment.equals(0L)) return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(new MessageResource("Enrollment confirmed successfully"));
+        var result = enrollmentCommandService.handle(confirmEnrollmentCommand)
+                .map(confirmedEnrollmentId -> new MessageResource("Enrollment confirmed successfully"));
+        return ResponseEntityAssembler.toResponseEntityFromResult(result, message -> message, HttpStatus.OK);
     }
 
     /**
@@ -99,10 +108,11 @@ public class EnrollmentsController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Enrollment rejected successfully"),
             @ApiResponse(responseCode = "400", description = "Bad request")})
-    public ResponseEntity<MessageResource> rejectEnrollment(@PathVariable Long enrollmentId) {
+    public ResponseEntity<?> rejectEnrollment(@PathVariable Long enrollmentId) {
         var rejectEnrollmentCommand = new RejectEnrollmentCommand(enrollmentId);
-        enrollmentCommandService.handle(rejectEnrollmentCommand);
-        return ResponseEntity.ok(new MessageResource("Rejected Enrollment ID: " + enrollmentId));
+        var result = enrollmentCommandService.handle(rejectEnrollmentCommand)
+                .map(rejectedEnrollmentId -> new MessageResource("Rejected Enrollment ID: " + rejectedEnrollmentId));
+        return ResponseEntityAssembler.toResponseEntityFromResult(result, message -> message, HttpStatus.OK);
     }
 
     /**
@@ -117,10 +127,11 @@ public class EnrollmentsController {
     @Operation(summary = "Cancel Enrollment", description = "Cancel an enrollment")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Enrollment cancelled successfully")})
-    public ResponseEntity<MessageResource> cancelEnrollment(@PathVariable Long enrollmentId) {
+    public ResponseEntity<?> cancelEnrollment(@PathVariable Long enrollmentId) {
         var cancelEnrollmentCommand = new CancelEnrollmentCommand(enrollmentId);
-        enrollmentCommandService.handle(cancelEnrollmentCommand);
-        return ResponseEntity.ok(new MessageResource("Cancelled Enrollment ID: "+ enrollmentId));
+        var result = enrollmentCommandService.handle(cancelEnrollmentCommand)
+                .map(cancelledEnrollmentId -> new MessageResource("Cancelled Enrollment ID: " + cancelledEnrollmentId));
+        return ResponseEntityAssembler.toResponseEntityFromResult(result, message -> message, HttpStatus.OK);
     }
 
     /**

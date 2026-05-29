@@ -1,10 +1,6 @@
 package com.acme.center.platform.learning.application.internal.commandservices;
 
 import com.acme.center.platform.learning.application.commandservices.EnrollmentCommandService;
-import com.acme.center.platform.learning.domain.exceptions.CourseNotFoundException;
-import com.acme.center.platform.learning.domain.exceptions.EnrollmentNotFoundException;
-import com.acme.center.platform.learning.domain.exceptions.EnrollmentRequestException;
-import com.acme.center.platform.learning.domain.exceptions.StudentNotFoundException;
 import com.acme.center.platform.learning.domain.model.aggregates.Enrollment;
 import com.acme.center.platform.learning.domain.model.commands.CancelEnrollmentCommand;
 import com.acme.center.platform.learning.domain.model.commands.CompleteTutorialForEnrollmentCommand;
@@ -14,6 +10,8 @@ import com.acme.center.platform.learning.domain.model.commands.RequestEnrollment
 import com.acme.center.platform.learning.domain.repositories.CourseRepository;
 import com.acme.center.platform.learning.domain.repositories.EnrollmentRepository;
 import com.acme.center.platform.learning.domain.repositories.StudentRepository;
+import com.acme.center.platform.shared.application.result.ApplicationError;
+import com.acme.center.platform.shared.application.result.Result;
 import org.springframework.stereotype.Service;
 
 /**
@@ -32,49 +30,52 @@ public class EnrollmentCommandServiceImpl implements EnrollmentCommandService {
     }
 
     @Override
-    public Long handle(RequestEnrollmentCommand command) {
+    public Result<Long, ApplicationError> handle(RequestEnrollmentCommand command) {
         if (!studentRepository.existsByAcmeStudentRecordId(command.studentRecordId())) {
-            throw new StudentNotFoundException(command.studentRecordId());
+            return Result.failure(ApplicationError.notFound("Student", command.studentRecordId().studentRecordId()));
         }
-        var course = courseRepository.findById(command.courseId()).orElseThrow(() -> new CourseNotFoundException(command.courseId()));
+        var course = courseRepository.findById(command.courseId());
+        if (course.isEmpty()) {
+            return Result.failure(ApplicationError.notFound("Course", command.courseId().toString()));
+        }
         try {
-            var enrollment = new Enrollment(command.studentRecordId(), course);
+            var enrollment = new Enrollment(command.studentRecordId(), course.get());
             enrollment = enrollmentRepository.save(enrollment);
-            return enrollment.getId();
+            return Result.success(enrollment.getId());
         } catch (Exception e) {
-            throw new EnrollmentRequestException(e.getMessage());
+            return Result.failure(ApplicationError.unexpected("request-enrollment", e.getMessage()));
         }
     }
 
     @Override
-    public Long handle(ConfirmEnrollmentCommand command) {
+    public Result<Long, ApplicationError> handle(ConfirmEnrollmentCommand command) {
         return enrollmentRepository.findById(command.enrollmentId()).map(enrollment -> {
             enrollment.confirm();
-            return enrollmentRepository.save(enrollment).getId();
-        }).orElseThrow(() -> new EnrollmentNotFoundException(command.enrollmentId()));
+            return Result.<Long, ApplicationError>success(enrollmentRepository.save(enrollment).getId());
+        }).orElseGet(() -> Result.failure(ApplicationError.notFound("Enrollment", command.enrollmentId().toString())));
     }
 
     @Override
-    public Long handle(RejectEnrollmentCommand command) {
+    public Result<Long, ApplicationError> handle(RejectEnrollmentCommand command) {
         return enrollmentRepository.findById(command.enrollmentId()).map(enrollment -> {
             enrollment.reject();
-            return enrollmentRepository.save(enrollment).getId();
-        }).orElseThrow(() -> new EnrollmentNotFoundException(command.enrollmentId()));
+            return Result.<Long, ApplicationError>success(enrollmentRepository.save(enrollment).getId());
+        }).orElseGet(() -> Result.failure(ApplicationError.notFound("Enrollment", command.enrollmentId().toString())));
     }
 
     @Override
-    public Long handle(CancelEnrollmentCommand command) {
+    public Result<Long, ApplicationError> handle(CancelEnrollmentCommand command) {
         return enrollmentRepository.findById(command.enrollmentId()).map(enrollment -> {
             enrollment.cancel();
-            return enrollmentRepository.save(enrollment).getId();
-        }).orElseThrow(() -> new EnrollmentNotFoundException(command.enrollmentId()));
+            return Result.<Long, ApplicationError>success(enrollmentRepository.save(enrollment).getId());
+        }).orElseGet(() -> Result.failure(ApplicationError.notFound("Enrollment", command.enrollmentId().toString())));
     }
 
     @Override
-    public Long handle(CompleteTutorialForEnrollmentCommand command) {
+    public Result<Long, ApplicationError> handle(CompleteTutorialForEnrollmentCommand command) {
         return enrollmentRepository.findById(command.enrollmentId()).map(enrollment -> {
             enrollment.completeTutorial(command.tutorialId());
-            return enrollmentRepository.save(enrollment).getId();
-        }).orElseThrow(() -> new EnrollmentNotFoundException(command.enrollmentId()));
+            return Result.<Long, ApplicationError>success(enrollmentRepository.save(enrollment).getId());
+        }).orElseGet(() -> Result.failure(ApplicationError.notFound("Enrollment", command.enrollmentId().toString())));
     }
 }
