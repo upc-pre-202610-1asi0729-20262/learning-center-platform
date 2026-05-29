@@ -6,6 +6,8 @@ import com.acme.center.platform.profiles.domain.model.valueobjects.EmailAddress;
 import com.acme.center.platform.profiles.domain.model.valueobjects.PersonName;
 import com.acme.center.platform.profiles.domain.model.valueobjects.StreetAddress;
 import com.acme.center.platform.shared.domain.model.aggregates.AbstractDomainAggregateRoot;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Objects;
 
@@ -18,7 +20,11 @@ import java.util.Objects;
  */
 public class Profile extends AbstractDomainAggregateRoot<Profile> {
 
+    @Getter
+    @Setter
     private Long id;
+
+    @Getter
     private PersonName name;
     private EmailAddress emailAddress;
     private StreetAddress streetAddress;
@@ -66,25 +72,15 @@ public class Profile extends AbstractDomainAggregateRoot<Profile> {
                 command.country());
     }
 
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public PersonName getName() {
-        return name;
+    public EmailAddress getEmailAddressValue() {
+        return emailAddress;
     }
 
     public void setName(PersonName name) {
         this.name = Objects.requireNonNull(name, "name must not be null");
     }
 
-    public EmailAddress getEmailAddressValue() {
-        return emailAddress;
-    }
 
     public void setEmailAddress(EmailAddress emailAddress) {
         this.emailAddress = Objects.requireNonNull(emailAddress, "emailAddress must not be null");
