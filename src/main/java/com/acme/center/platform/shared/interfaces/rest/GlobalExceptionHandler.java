@@ -15,7 +15,6 @@ import java.util.ResourceBundle;
 
 /**
  * Global exception handler for REST API.
- *
  * Provides centralized exception handling for the entire application,
  * ensuring all unhandled exceptions are translated to consistent
  * HTTP responses via the shared error assembly pattern.

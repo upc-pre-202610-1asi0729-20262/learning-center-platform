@@ -1,5 +1,6 @@
 package com.acme.center.platform.shared.interfaces.rest;
 
+import com.acme.center.platform.learning.domain.model.valueobjects.AcmeStudentRecordId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -94,6 +95,17 @@ class LocalizedErrorResponseWebMvcTest {
                 .andExpect(jsonPath("$.details").value("boom"));
     }
 
+    @Test
+    void returnsBadRequestForInvalidUuidStudentRecordId() throws Exception {
+        mockMvc.perform(get("/test/students/not-a-uuid")
+                        .header("Accept-Language", "en")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.message").value("Validation failed"))
+                .andExpect(jsonPath("$.details").value("Student record id must be a valid UUID"));
+    }
+
     @RestController
     static class ThrowingTestController {
         @GetMapping("/test/error")
@@ -104,6 +116,11 @@ class LocalizedErrorResponseWebMvcTest {
         @PostMapping("/test/validation")
         public String validate(@Valid @RequestBody ValidationResource resource) {
             return resource.name();
+        }
+
+        @GetMapping("/test/students/{studentRecordId}")
+        public String student(@org.springframework.web.bind.annotation.PathVariable String studentRecordId) {
+            return new AcmeStudentRecordId(studentRecordId).studentRecordId();
         }
     }
 
