@@ -3,6 +3,8 @@ package com.acme.center.platform.learning.application.internal.eventhandlers;
 import com.acme.center.platform.learning.application.commandservices.StudentCommandService;
 import com.acme.center.platform.learning.domain.model.commands.CreateStudentByProfileIdCommand;
 import com.acme.center.platform.profiles.interfaces.events.ProfileCreatedIntegrationEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
  */
 @Service("learningProfileCreatedEventHandler")
 public class ProfileCreatedEventHandler {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProfileCreatedEventHandler.class);
 
     private final StudentCommandService studentCommandService;
 
@@ -51,7 +54,11 @@ public class ProfileCreatedEventHandler {
     @EventListener
     public void on(ProfileCreatedIntegrationEvent event) {
         var command = new CreateStudentByProfileIdCommand(event.profileId());
-        studentCommandService.handle(command);
+        var result = studentCommandService.handle(command);
+
+        if (result instanceof com.acme.center.platform.shared.application.result.Result.Failure(var error)) {
+            LOGGER.warn("Failed to create student for profile {}: {}", event.profileId(), error.message());
+        }
     }
 }
 
