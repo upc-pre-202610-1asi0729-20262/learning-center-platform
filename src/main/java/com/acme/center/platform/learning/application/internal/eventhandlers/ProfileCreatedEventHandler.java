@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
  * default, the student record is fully persisted before control returns to the
  * caller that triggered the profile creation.</p>
  */
-@Service
+@Service("learningProfileCreatedEventHandler")
 public class ProfileCreatedEventHandler {
 
     private final StudentCommandService studentCommandService;

@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
  * (from {@code profiles.interfaces.events}), never to the internal
  * {@link ProfileCreatedEvent}.</p>
  */
-@Service
+@Service("profilesProfileCreatedEventHandler")
 public class ProfileCreatedEventHandler {
 
     private final ApplicationEventPublisher eventPublisher;
