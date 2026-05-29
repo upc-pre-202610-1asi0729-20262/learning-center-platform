@@ -3,9 +3,9 @@ package com.acme.center.platform.iam.application.commandservices;
 import com.acme.center.platform.iam.domain.model.aggregates.User;
 import com.acme.center.platform.iam.domain.model.commands.SignInCommand;
 import com.acme.center.platform.iam.domain.model.commands.SignUpCommand;
+import com.acme.center.platform.shared.application.result.ApplicationError;
+import com.acme.center.platform.shared.application.result.Result;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-
-import java.util.Optional;
 
 /**
  * User command service
@@ -17,16 +17,16 @@ public interface UserCommandService {
     /**
      * Handle sign in command
      * @param command the {@link SignInCommand} command
-     * @return an {@link Optional} of {@link ImmutablePair} of {@link User} and {@link String}
+     * @return a {@link Result} with authenticated user and token or an {@link ApplicationError}
      */
-    Optional<ImmutablePair<User, String>> handle(SignInCommand command);
+    Result<ImmutablePair<User, String>, ApplicationError> handle(SignInCommand command);
 
     /**
      * Handle sign up command
      * @param command the {@link SignUpCommand} command
-     * @return an {@link Optional} of {@link User} entity
+     * @return a {@link Result} with created user or an {@link ApplicationError}
      */
-    Optional<User> handle(SignUpCommand command);
+    Result<User, ApplicationError> handle(SignUpCommand command);
 
 
 }

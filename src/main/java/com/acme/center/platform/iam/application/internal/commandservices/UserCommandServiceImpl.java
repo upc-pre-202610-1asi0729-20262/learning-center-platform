@@ -8,10 +8,10 @@ import com.acme.center.platform.iam.domain.model.commands.SignInCommand;
 import com.acme.center.platform.iam.domain.model.commands.SignUpCommand;
 import com.acme.center.platform.iam.domain.repositories.RoleRepository;
 import com.acme.center.platform.iam.domain.repositories.UserRepository;
+import com.acme.center.platform.shared.application.result.ApplicationError;
+import com.acme.center.platform.shared.application.result.Result;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 /**
  * User command service implementation.
@@ -36,22 +36,39 @@ public class UserCommandServiceImpl implements UserCommandService {
     }
 
     @Override
-    public Optional<ImmutablePair<User, String>> handle(SignInCommand command) {
+    public Result<ImmutablePair<User, String>, ApplicationError> handle(SignInCommand command) {
         var user = userRepository.findByUsername(command.username());
-        if (user.isEmpty()) throw new RuntimeException("User not found");
-        if (!hashingService.matches(command.password(), user.get().getPassword())) throw new RuntimeException("Invalid password");
+        if (user.isEmpty()) {
+            return Result.failure(ApplicationError.notFound("User", command.username()));
+        }
+        if (!hashingService.matches(command.password(), user.get().getPassword())) {
+            return Result.failure(ApplicationError.validationError("credentials", "Invalid username or password"));
+        }
         var token = tokenService.generateToken(user.get().getUsername());
-        return Optional.of(ImmutablePair.of(user.get(), token));
+        return Result.success(ImmutablePair.of(user.get(), token));
     }
 
     @Override
-    public Optional<User> handle(SignUpCommand command) {
-        if (userRepository.existsByUsername(command.username())) throw new RuntimeException("Username already exists");
+    public Result<User, ApplicationError> handle(SignUpCommand command) {
+        if (userRepository.existsByUsername(command.username())) {
+            return Result.failure(ApplicationError.conflict("User", "Username already exists"));
+        }
         var roles = command.roles().stream()
-                .map(role -> roleRepository.findByName(role.getName()).orElseThrow(() -> new RuntimeException("Role name not found")))
+                .map(role -> roleRepository.findByName(role.getName()))
                 .toList();
-        var user = new User(command.username(), hashingService.encode(command.password()), roles);
+
+        if (roles.stream().anyMatch(java.util.Optional::isEmpty)) {
+            return Result.failure(ApplicationError.notFound("Role", "one or more role names"));
+        }
+
+        var resolvedRoles = roles.stream()
+                .map(java.util.Optional::get)
+                .toList();
+
+        var user = new User(command.username(), hashingService.encode(command.password()), resolvedRoles);
         userRepository.save(user);
-        return userRepository.findByUsername(command.username());
+        return userRepository.findByUsername(command.username())
+                .<Result<User, ApplicationError>>map(Result::success)
+                .orElseGet(() -> Result.failure(ApplicationError.unexpected("sign-up", "Created user could not be reloaded")));
     }
 }

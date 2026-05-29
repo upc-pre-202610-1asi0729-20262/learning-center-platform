@@ -9,6 +9,7 @@ import com.acme.center.platform.iam.interfaces.rest.transform.AuthenticatedUserR
 import com.acme.center.platform.iam.interfaces.rest.transform.SignInCommandFromResourceAssembler;
 import com.acme.center.platform.iam.interfaces.rest.transform.SignUpCommandFromResourceAssembler;
 import com.acme.center.platform.iam.interfaces.rest.transform.UserResourceFromEntityAssembler;
+import com.acme.center.platform.shared.interfaces.rest.transform.ResponseEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -52,14 +53,14 @@ public class AuthenticationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User authenticated successfully."),
             @ApiResponse(responseCode = "404", description = "User not found.")})
-    public ResponseEntity<AuthenticatedUserResource> signIn(@RequestBody SignInResource signInResource) {
+    public ResponseEntity<?> signIn(@RequestBody SignInResource signInResource) {
         var signInCommand = SignInCommandFromResourceAssembler.toCommandFromResource(signInResource);
-        var authenticatedUser = userCommandService.handle(signInCommand);
-        if (authenticatedUser.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        var authenticatedUserResource = AuthenticatedUserResourceFromEntityAssembler.toResourceFromEntity(authenticatedUser.get().getLeft(), authenticatedUser.get().getRight());
-        return ResponseEntity.ok(authenticatedUserResource);
+        var result = userCommandService.handle(signInCommand);
+        return ResponseEntityAssembler.toResponseEntityFromResult(
+                result,
+                auth -> AuthenticatedUserResourceFromEntityAssembler.toResourceFromEntity(auth.getLeft(), auth.getRight()),
+                HttpStatus.OK
+        );
     }
 
     /**
@@ -72,14 +73,14 @@ public class AuthenticationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User created successfully."),
             @ApiResponse(responseCode = "400", description = "Bad request.")})
-    public ResponseEntity<UserResource> signUp(@RequestBody SignUpResource signUpResource) {
+    public ResponseEntity<?> signUp(@RequestBody SignUpResource signUpResource) {
         var signUpCommand = SignUpCommandFromResourceAssembler.toCommandFromResource(signUpResource);
-        var user = userCommandService.handle(signUpCommand);
-        if (user.isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-        var userResource = UserResourceFromEntityAssembler.toResourceFromEntity(user.get());
-        return new ResponseEntity<>(userResource, HttpStatus.CREATED);
+        var result = userCommandService.handle(signUpCommand);
+        return ResponseEntityAssembler.toResponseEntityFromResult(
+                result,
+                UserResourceFromEntityAssembler::toResourceFromEntity,
+                HttpStatus.CREATED
+        );
 
     }
 }
