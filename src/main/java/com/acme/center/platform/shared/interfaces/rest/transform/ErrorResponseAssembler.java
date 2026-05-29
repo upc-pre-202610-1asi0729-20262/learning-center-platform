@@ -4,6 +4,7 @@ import com.acme.center.platform.shared.application.result.ApplicationError;
 import com.acme.center.platform.shared.interfaces.rest.resources.ErrorResource;
 import org.jspecify.annotations.NullMarked;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
 /**
@@ -23,7 +24,7 @@ public final class ErrorResponseAssembler {
      * @return a ResponseEntity with the appropriate HTTP status and error resource
      */
     public static ResponseEntity<ErrorResource> toErrorResponseFromApplicationError(ApplicationError error) {
-        HttpStatus status = toStatusFromErrorCode(error.code());
+        HttpStatusCode status = toStatusFromErrorCode(error.code());
         ErrorResource resource = new ErrorResource(error.code(), error.message(), error.details());
         return new ResponseEntity<>(resource, status);
     }
@@ -34,11 +35,11 @@ public final class ErrorResponseAssembler {
      * @param errorCode the error code string (e.g., "PROFILE_NOT_FOUND", "VALIDATION_ERROR")
      * @return the corresponding HttpStatus
      */
-    public static HttpStatus toStatusFromErrorCode(String errorCode) {
+    public static HttpStatusCode toStatusFromErrorCode(String errorCode) {
         return switch (errorCode) {
             case "VALIDATION_ERROR" -> HttpStatus.BAD_REQUEST;
             case String s when s.endsWith("_NOT_FOUND") -> HttpStatus.NOT_FOUND;
-            case "BUSINESS_RULE_VIOLATION" -> HttpStatus.UNPROCESSABLE_ENTITY;
+            case "BUSINESS_RULE_VIOLATION" -> HttpStatusCode.valueOf(422);
             case String s when s.endsWith("_CONFLICT") -> HttpStatus.CONFLICT;
             case "UNEXPECTED_ERROR" -> HttpStatus.INTERNAL_SERVER_ERROR;
             default -> HttpStatus.INTERNAL_SERVER_ERROR;
