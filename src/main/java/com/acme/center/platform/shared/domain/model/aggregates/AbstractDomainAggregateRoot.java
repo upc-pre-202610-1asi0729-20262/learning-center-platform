@@ -1,5 +1,6 @@
 package com.acme.center.platform.shared.domain.model.aggregates;
 
+import org.jspecify.annotations.NullMarked;
 import org.springframework.data.domain.AbstractAggregateRoot;
 
 import java.util.Collection;
@@ -18,6 +19,7 @@ import java.util.Collection;
  *
  * @param <T> the concrete aggregate root type
  */
+@NullMarked
 public abstract class AbstractDomainAggregateRoot<T extends AbstractDomainAggregateRoot<T>>
         extends AbstractAggregateRoot<T> {
 
