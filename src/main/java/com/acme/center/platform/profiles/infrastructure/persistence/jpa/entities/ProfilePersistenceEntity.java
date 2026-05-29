@@ -4,15 +4,13 @@ import com.acme.center.platform.profiles.domain.model.valueobjects.EmailAddress;
 import com.acme.center.platform.profiles.infrastructure.persistence.jpa.converters.EmailAddressPersistenceConverter;
 import com.acme.center.platform.profiles.infrastructure.persistence.jpa.embeddables.PersonNamePersistenceEmbeddable;
 import com.acme.center.platform.profiles.infrastructure.persistence.jpa.embeddables.StreetAddressPersistenceEmbeddable;
+import com.acme.center.platform.shared.infrastructure.persistence.jpa.entities.AuditableAbstractPersistenceEntity;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 /**
@@ -20,11 +18,7 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "profiles")
-public class ProfilePersistenceEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class ProfilePersistenceEntity extends AuditableAbstractPersistenceEntity {
 
     @Embedded
     @AttributeOverrides({
@@ -48,13 +42,6 @@ public class ProfilePersistenceEntity {
     public ProfilePersistenceEntity() {
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public PersonNamePersistenceEmbeddable getName() {
         return name;
