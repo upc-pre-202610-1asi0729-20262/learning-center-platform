@@ -193,7 +193,7 @@ Acceptance criteria:
   - Then API responds `200 OK` with a list of items containing user attributes: id (Long), username (String), roles (List<String>).
 - Get user by id
   - Given GET `/api/v1/users/{userId}` is received
-  - When user exists
+  - When a user exists
   - Then API responds `200 OK` and returns the user with attributes: id (Long), username (String), roles (List<String>).
   - Given GET `/api/v1/users/{userId}` is received for a non-existent id
   - When the API does not find the user
@@ -221,17 +221,106 @@ Acceptance criteria:
 ---
 
 ### TS-IAM002 — Sign-in through the API
-As a frontend developer, I want to sign in users through the API so that I can obtain authentication tokens for my application as a feature in my application.
+As a frontend developer, I want to sign in users through the API so that I can get authentication tokens for my application as a feature in my application.
 
 Acceptance criteria:
 - Scenario: Successful sign-in
   - Given a POST `/api/v1/authentication/sign-in` with credentials attributes: username (String), password (String)
   - When the API validates credentials successfully
   - Then the API responds `200 OK` and returns the authenticated user with attributes: id (Long), username (String), token (String).
-- Scenario: User not found or invalid credentials
-  - Given a POST `/api/v1/authentication/sign-in` with invalid credentials or non-existent user
-  - When the API fails to authenticate the credentials
-  - Then the API responds `404 Not Found` (per current controller behavior) and returns an error payload.
+- Scenario: Invalid credentials or malformed request
+  - Given a POST `/api/v1/authentication/sign-in` with invalid credentials or malformed request
+  - When the API fails to validate the credentials or request structure
+  - Then the API responds `400 Bad Request` and returns an error payload describing the validation error.
+- Scenario: User not found
+  - Given a POST `/api/v1/authentication/sign-in` with a non-existent username
+  - When the API cannot find the user
+  - Then the API responds `404 Not Found` and returns an error payload.
+
+---
+
+
+
+### TS-C004 — Update a Course
+As a frontend developer, I want to update an existing course through the API so that I can modify course information (title, description) after creation as a feature in my application.
+
+Acceptance criteria:
+- Scenario: Successful update
+  - Given a PUT request to `/api/v1/courses/{courseId}` is received with a request body containing update-course attributes: title, description
+  - When the API validates and updates the course
+  - Then the API responds with `200 OK` and returns the updated course with attributes: id (Long), title (String), description (String).
+- Scenario: Course not found
+  - Given a PUT request to `/api/v1/courses/{courseId}` is received for a non-existent `{courseId}`
+  - When the API cannot find the course
+  - Then the API responds `404 Not Found` and returns an error payload.
+- Scenario: Validation error
+  - Given a PUT request to `/api/v1/courses/{courseId}` is received with missing or invalid update-course attributes
+  - When the API validates the request and detects validation errors
+  - Then the API responds with `400 Bad Request` and returns an error payload describing validation errors.
+
+---
+
+### TS-C005 — Delete a Course
+As a frontend developer, I want to delete a course through the API so that I can remove courses from the system as a feature in my application.
+
+Acceptance criteria:
+- Scenario: Successful delete
+  - Given a DELETE request to `/api/v1/courses/{courseId}` is received
+  - When the API successfully deletes the course
+  - Then the API responds `204 No Content` with no response body.
+- Scenario: Course not found
+  - Given a DELETE request to `/api/v1/courses/{courseId}` is received for a non-existent `{courseId}`
+  - When the API cannot find the course
+  - Then the API responds `404 Not Found` and returns an error payload.
+
+---
+
+### TS-E003 — Get All Enrollments
+As a frontend developer, I want to retrieve all enrollments in the system through the API so that I can view enrollment statistics or generate reports as a feature in my application.
+
+Acceptance criteria:
+- Scenario: Enrollments exist
+  - Given a GET request to `/api/v1/enrollments` is received
+  - When the API finds one or more enrollments
+  - Then the API responds `200 OK` and returns a list where each item contains enrollment attributes: enrollmentId (Long), studentRecordId (UUID String), courseId (Long), status (String).
+- Scenario: No enrollments found
+  - Given a GET request to `/api/v1/enrollments` is received and there are no enrollments in the system
+  - When the API searches for enrollments and finds none
+  - Then the API responds with an empty list and responds `200 OK`.
+
+---
+
+### TS-S003 — Get Student's Enrollments
+As a frontend developer, I want to retrieve all course enrollments for a specific student through the API so that I can display a student's course enrollment history as a feature in my application.
+
+Acceptance criteria:
+- Scenario: Student has enrollments
+  - Given a GET request to `/api/v1/students/{studentRecordId}/enrollments` is received
+  - When the API finds one or more enrollments for the student
+  - Then the API responds `200 OK` and returns a list where each item contains enrollment attributes: enrollmentId (Long), studentRecordId (UUID String), courseId (Long), status (String).
+- Scenario: Student not found
+  - Given a GET request to `/api/v1/students/{studentRecordId}/enrollments` is received for a non-existent `{studentRecordId}`
+  - When the API cannot find the student
+  - Then the API responds `404 Not Found` and returns an error payload.
+- Scenario: Student has no enrollments
+  - Given a GET request to `/api/v1/students/{studentRecordId}/enrollments` is received for a student with no enrollments
+  - When the API finds the student but has no enrollments
+  - Then the API responds `200 OK` and returns an empty list.
+
+---
+
+### TS-U002 — Get Available Roles
+As a frontend developer, I want to retrieve all available system roles through the API so that I can display role options when creating or updating user accounts as a feature in my application.
+
+Acceptance criteria:
+- Scenario: Roles exist
+  - Given a GET request to `/api/v1/roles` is received
+  - When the API finds one or more roles
+  - Then the API responds `200 OK` and returns a list where each item contains role attributes: id (Long), name (String).
+- Scenario: No roles found
+  - Given a GET request to `/api/v1/roles` is received and there are no roles configured in the system
+  - When the API searches for roles and finds none
+  - Then the API responds with an empty list and responds `200 OK`.
 
 ---
 
