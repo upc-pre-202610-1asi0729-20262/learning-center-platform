@@ -1,17 +1,18 @@
 package com.acme.center.platform.profiles.domain.model.valueobjects;
 
-import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.Email;
 
 /**
- * EmailAddress Value Object
+ * EmailAddress Value Object.
  */
-@Embeddable
 public record EmailAddress(@Email String address) {
-    /**
-     * Default constructor
-     */
-    public EmailAddress() {
-        this(null);
+    public EmailAddress {
+        if (address == null || address.isBlank()) {
+            throw new IllegalArgumentException("Email address must not be null or blank");
+        }
+    }
+
+    public String getAddress() {
+        return address;
     }
 }

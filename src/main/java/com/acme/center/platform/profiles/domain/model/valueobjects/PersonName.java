@@ -1,15 +1,9 @@
 package com.acme.center.platform.profiles.domain.model.valueobjects;
 
 /**
- * PersonName Value Object
+ * PersonName Value Object.
  */
 public record PersonName(String firstName, String lastName) {
-    /**
-     * Default constructor
-     */
-    public PersonName() {
-        this(null, null);
-    }
 
     /**
      * Full name getter

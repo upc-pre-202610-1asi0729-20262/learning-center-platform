@@ -1,7 +1,7 @@
 package com.acme.center.platform.profiles.domain.model.valueobjects;
 
 /**
- * StreetAddress Value Object
+ * StreetAddress Value Object.
  */
 public record StreetAddress(
         String street,
@@ -10,12 +10,6 @@ public record StreetAddress(
         String postalCode,
         String country) {
 
-    /**
-     * Default constructor
-     */
-    public StreetAddress() {
-        this(null, null, null, null, null);
-    }
 
     /**
      * StreetAddress constructor with street, number, city, postal code and country

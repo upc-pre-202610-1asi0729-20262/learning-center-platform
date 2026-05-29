@@ -5,7 +5,7 @@ import com.acme.center.platform.profiles.domain.model.queries.GetAllProfilesQuer
 import com.acme.center.platform.profiles.domain.model.queries.GetProfileByEmailQuery;
 import com.acme.center.platform.profiles.domain.model.queries.GetProfileByIdQuery;
 import com.acme.center.platform.profiles.application.queryservices.ProfileQueryService;
-import com.acme.center.platform.profiles.infrastructure.persistence.jpa.repositories.ProfileRepository;
+import com.acme.center.platform.profiles.domain.repositories.ProfileRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

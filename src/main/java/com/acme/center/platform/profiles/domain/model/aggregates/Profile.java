@@ -4,66 +4,95 @@ import com.acme.center.platform.profiles.domain.model.commands.CreateProfileComm
 import com.acme.center.platform.profiles.domain.model.valueobjects.EmailAddress;
 import com.acme.center.platform.profiles.domain.model.valueobjects.PersonName;
 import com.acme.center.platform.profiles.domain.model.valueobjects.StreetAddress;
-import com.acme.center.platform.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
-import jakarta.persistence.*;
+import java.util.Objects;
 
 /**
- * Profile Aggregate Root
+ * Profile aggregate root.
  */
-@Entity
-public class Profile extends AuditableAbstractAggregateRoot<Profile> {
+public class Profile {
 
-    @Embedded
+    private Long id;
     private PersonName name;
-
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "address", column = @Column(name = "email_address"))})
     private EmailAddress emailAddress;
-
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "street", column = @Column(name = "street_address_street")),
-            @AttributeOverride(name = "number", column = @Column(name = "street_address_number")),
-            @AttributeOverride(name = "city", column = @Column(name = "street_address_city")),
-            @AttributeOverride(name = "postalCode", column = @Column(name = "street_address_postal_code")),
-            @AttributeOverride(name = "country", column = @Column(name = "street_address_country"))})
     private StreetAddress streetAddress;
 
     /**
-     * Constructor with first name, last name, email, street, number, city, postal code and country
-     * @param firstName First name
-     * @param lastName Last name
-     * @param email Email
-     * @param street Street
-     * @param number Number
-     * @param city City
-     * @param postalCode Postal code
-     * @param country Country
+     * Creates a profile from the provided domain values.
      */
-    public Profile(String firstName, String lastName, String email, String street, String number, String city, String postalCode, String country) {
-        this.name = new PersonName(firstName, lastName);
-        this.emailAddress = new EmailAddress(email);
-        this.streetAddress = new StreetAddress(street, number, city, postalCode, country);
+    public Profile(Long id, PersonName name, EmailAddress emailAddress, StreetAddress streetAddress) {
+        this.id = id;
+        this.name = Objects.requireNonNull(name, "name must not be null");
+        this.emailAddress = Objects.requireNonNull(emailAddress, "emailAddress must not be null");
+        this.streetAddress = Objects.requireNonNull(streetAddress, "streetAddress must not be null");
     }
 
     /**
-     * Default constructor
+     * Creates a profile from the provided domain values.
      */
-    public Profile() {}
+    public Profile(PersonName name, EmailAddress emailAddress, StreetAddress streetAddress) {
+        this(null, name, emailAddress, streetAddress);
+    }
 
     /**
-     * Constructor with a CreateProfileCommand
+     * Constructor with first name, last name, email, street, number, city, postal code and country.
+     */
+    public Profile(String firstName, String lastName, String email, String street, String number, String city, String postalCode, String country) {
+        this(
+                new PersonName(firstName, lastName),
+                new EmailAddress(email),
+                new StreetAddress(street, number, city, postalCode, country));
+    }
+
+    /**
+     * Constructor with a CreateProfileCommand.
      * @param command The {@link CreateProfileCommand} instance
      */
     public Profile(CreateProfileCommand command) {
-        this.name = new PersonName(command.firstName(), command.lastName());
-        this.emailAddress = new EmailAddress(command.email());
-        this.streetAddress = new StreetAddress(command.street(), command.number(), command.city(), command.postalCode(), command.country());
+        this(
+                command.firstName(),
+                command.lastName(),
+                command.email(),
+                command.street(),
+                command.number(),
+                command.city(),
+                command.postalCode(),
+                command.country());
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public PersonName getName() {
+        return name;
+    }
+
+    public void setName(PersonName name) {
+        this.name = Objects.requireNonNull(name, "name must not be null");
+    }
+
+    public EmailAddress getEmailAddressValue() {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(EmailAddress emailAddress) {
+        this.emailAddress = Objects.requireNonNull(emailAddress, "emailAddress must not be null");
+    }
+
+    public StreetAddress getStreetAddressValue() {
+        return streetAddress;
+    }
+
+    public void setStreetAddress(StreetAddress streetAddress) {
+        this.streetAddress = Objects.requireNonNull(streetAddress, "streetAddress must not be null");
     }
 
     /**
-     * Full name getter
+     * Full name getter.
      * @return Full name
      */
     public String getFullName() {
@@ -71,7 +100,7 @@ public class Profile extends AuditableAbstractAggregateRoot<Profile> {
     }
 
     /**
-     * Email address getter
+     * Email address getter.
      * @return Email address
      */
     public String getEmailAddress() {
@@ -79,7 +108,7 @@ public class Profile extends AuditableAbstractAggregateRoot<Profile> {
     }
 
     /**
-     * Street address getter
+     * Street address getter.
      * @return Street address
      */
     public String getStreetAddress() {
@@ -87,7 +116,7 @@ public class Profile extends AuditableAbstractAggregateRoot<Profile> {
     }
 
     /**
-     * Update name
+     * Update name.
      * @param firstName First name
      * @param lastName Last name
      */
@@ -96,7 +125,7 @@ public class Profile extends AuditableAbstractAggregateRoot<Profile> {
     }
 
     /**
-     * Update email address
+     * Update email address.
      * @param email Email address
      */
     public void updateEmailAddress(String email) {

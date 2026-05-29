@@ -4,7 +4,7 @@ import com.acme.center.platform.profiles.domain.model.aggregates.Profile;
 import com.acme.center.platform.profiles.domain.model.commands.CreateProfileCommand;
 import com.acme.center.platform.profiles.domain.model.valueobjects.EmailAddress;
 import com.acme.center.platform.profiles.application.commandservices.ProfileCommandService;
-import com.acme.center.platform.profiles.infrastructure.persistence.jpa.repositories.ProfileRepository;
+import com.acme.center.platform.profiles.domain.repositories.ProfileRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -33,7 +33,6 @@ public class ProfileCommandServiceImpl implements ProfileCommandService {
             throw new IllegalArgumentException("Profile with email address already exists");
         }
         var profile = new Profile(command);
-        profileRepository.save(profile);
-        return Optional.of(profile);
+        return Optional.of(profileRepository.save(profile));
     }
 }
