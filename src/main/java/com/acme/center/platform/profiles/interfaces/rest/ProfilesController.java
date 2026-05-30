@@ -24,6 +24,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * REST controller that exposes profile resources and profile retrieval endpoints.
  */
@@ -122,14 +125,12 @@ public class ProfilesController {
                 responseCode = "200",
                 description = "Profiles found",
                 content = @Content(schema = @Schema(implementation = ProfileResource.class))
-            ),
-            @ApiResponse(responseCode = "404", description = "No profiles found")
+            )
     })
-    public ResponseEntity<?> getAllProfiles() {
+    public ResponseEntity<List<ProfileResource>> getAllProfiles() {
         var profiles = profileQueryService.handle(new GetAllProfilesQuery());
         if (profiles.isEmpty()) {
-            var error = ApplicationError.notFound("Profile", "all");
-            return ErrorResponseAssembler.toErrorResponseFromApplicationError(error);
+            return ResponseEntity.ok(Collections.emptyList());
         }
         var profileResources = profiles.stream()
                 .map(ProfileResourceFromEntityAssembler::toResourceFromEntity)
