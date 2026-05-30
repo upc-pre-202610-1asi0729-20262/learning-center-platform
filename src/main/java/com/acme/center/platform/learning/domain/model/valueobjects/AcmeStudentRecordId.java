@@ -1,20 +1,17 @@
 package com.acme.center.platform.learning.domain.model.valueobjects;
 
-import jakarta.persistence.Embeddable;
 import java.util.UUID;
 
 /**
  * Value object representing the student record id.
  * @summary
- * This value object is used to represent the student record id. It is an embeddable object that is used to represent
- * the student record id in the student record entity.
+ * This value object is used to represent the student record id.
  * The identifier is stored as a UUID string.
  * It throws an IllegalArgumentException if the student record id is null, empty, or not a valid UUID.
  * @param studentRecordId The student record id. It must be a valid UUID string.
  * @see IllegalArgumentException
  * @since 1.0
  */
-@Embeddable
 public record AcmeStudentRecordId(String studentRecordId) {
     /**
      * Default constructor.
