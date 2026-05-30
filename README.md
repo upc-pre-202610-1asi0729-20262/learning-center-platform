@@ -49,16 +49,16 @@ The project uses profile-based configuration located in `src/main/resources`:
 
 Required environment variables (especially for the `prod` profile):
 
-| Variable | Description | Default (Dev) |
-|----------|-------------|---------------|
-| `DATABASE_URL` | MySQL host address | `localhost` |
-| `DATABASE_PORT` | MySQL port | `3306` |
-| `DATABASE_NAME` | Database name | `learning_center_platform` |
-| `DATABASE_USER` | Database username | `root` |
-| `DATABASE_PASSWORD` | Database password | `password` |
-| `PORT` | Application port | `8080` |
-| `SPRING_PROFILES_ACTIVE` | Active Spring profile | `dev` |
-| `JWT_SECRET` | Secret key for JWT signing | `replace-with-a-strong-random-secret` |
+| Variable                 | Description                | Default (Dev)                         |
+|--------------------------|----------------------------|---------------------------------------|
+| `DATABASE_URL`           | MySQL host address         | `localhost`                           |
+| `DATABASE_PORT`          | MySQL port                 | `3306`                                |
+| `DATABASE_NAME`          | Database name              | `learning_center_platform`            |
+| `DATABASE_USER`          | Database username          | `root`                                |
+| `DATABASE_PASSWORD`      | Database password          | `password`                            |
+| `PORT`                   | Application port           | `8080`                                |
+| `SPRING_PROFILES_ACTIVE` | Active Spring profile      | `dev`                                 |
+| `JWT_SECRET`             | Secret key for JWT signing | `replace-with-a-strong-random-secret` |
 
 ## Getting Started
 
@@ -152,5 +152,5 @@ Refer to the `docs/` folder for more details:
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+This project is licensed under the MIT License. See the [LICENSE.md](LICENSE.md) file for details.
 
