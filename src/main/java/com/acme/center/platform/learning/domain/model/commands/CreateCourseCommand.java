@@ -1,21 +1,16 @@
 package com.acme.center.platform.learning.domain.model.commands;
 
 /**
- * Command to create a course
- * @param title the course title.
- *              Cannot be null or blank
- * @param description the course description.
- *                    Cannot be null or blank
+ * Command to create a course.
+ *
+ * @param title The title of the course. Cannot be null or blank.
+ * @param description The description of the course. Cannot be null or blank.
  */
 public record CreateCourseCommand(String title, String description) {
     /**
-     * Constructor
-     * @param title the course title.
-     *              Cannot be null or blank
-     * @param description the course description.
-     *                    Cannot be null or blank
-     * @throws IllegalArgumentException if title is null or blank
-     * @throws IllegalArgumentException if description is null or blank
+     * Compact constructor for CreateCourseCommand.
+     * Validates that title and description are not null or blank.
+     * @throws IllegalArgumentException if title or description is null or blank.
      */
     public CreateCourseCommand {
         if (title == null || title.isBlank()) {

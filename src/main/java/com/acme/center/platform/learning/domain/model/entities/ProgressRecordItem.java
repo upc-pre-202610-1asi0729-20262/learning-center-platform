@@ -13,55 +13,118 @@ import java.util.Date;
 import java.util.Objects;
 
 /**
- * Represents a record of a student's progress on a tutorial.
+ * ProgressRecordItem domain entity.
+ *
+ * <p>
+ * Represents a record of a student's progress on a specific tutorial within an enrollment.
+ * It tracks when the tutorial was started and completed, and its current progress status.
+ * </p>
  */
 @Getter
 public class ProgressRecordItem {
+    /**
+     * The unique identifier for the progress record item.
+     */
     @Setter
     private Long id;
+
+    /**
+     * The enrollment this progress record item belongs to.
+     */
     @Setter
     private Enrollment enrollment;
+
+    /**
+     * The ID of the tutorial associated with this progress record item.
+     */
     @Setter
     private TutorialId tutorialId;
+
+    /**
+     * The current status of the tutorial progress.
+     */
     @Setter
     private ProgressStatus status;
+
+    /**
+     * The date and time when the tutorial was started.
+     */
     @Setter
     private Date statedAt;
+
+    /**
+     * The date and time when the tutorial was completed.
+     */
     @Setter
     private Date completedAt;
 
+    /**
+     * Constructor for ProgressRecordItem.
+     * Initializes the status to NOT_STARTED.
+     * @param enrollment The enrollment.
+     * @param tutorialId The tutorial ID.
+     */
     public ProgressRecordItem(Enrollment enrollment, TutorialId tutorialId) {
         this.enrollment = enrollment;
         this.tutorialId = tutorialId;
         this.status = ProgressStatus.NOT_STARTED;
     }
 
+    /**
+     * Default constructor for ProgressRecordItem.
+     * Required for reconstruction from persistence.
+     */
     public ProgressRecordItem() {
         // Required for reconstruction
     }
 
+    /**
+     * Starts the tutorial.
+     * Sets the status to STARTED and the start date to the current date and time.
+     */
     public void start() {
         this.status = ProgressStatus.STARTED;
         this.statedAt = new Date();
     }
 
+    /**
+     * Completes the tutorial.
+     * Sets the status to COMPLETED and the completion date to the current date and time.
+     */
     public void complete() {
         this.status = ProgressStatus.COMPLETED;
         this.completedAt = new Date();
     }
 
+    /**
+     * Checks if the tutorial is completed.
+     * @return true if the status is COMPLETED, false otherwise.
+     */
     public boolean isCompleted() {
         return ProgressStatus.COMPLETED.equals(status);
     }
 
+    /**
+     * Checks if the tutorial is currently in progress.
+     * @return true if the status is STARTED, false otherwise.
+     */
     public boolean isInProgress() {
         return ProgressStatus.STARTED.equals(status);
     }
 
+    /**
+     * Checks if the tutorial has not yet been started.
+     * @return true if the status is NOT_STARTED, false otherwise.
+     */
     public boolean isNotStarted() {
         return ProgressStatus.NOT_STARTED.equals(status);
     }
 
+    /**
+     * Calculates the number of days elapsed since the tutorial was started.
+     * If not started, returns 0. If not completed, calculates up to the current date.
+     * @return The number of days elapsed.
+     */
     public long calculateDaysElapsed() {
         if (ProgressStatus.NOT_STARTED.equals(status)) return 0;
         var defaultTimeZone = ZoneId.systemDefault();

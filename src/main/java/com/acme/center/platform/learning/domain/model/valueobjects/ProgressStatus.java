@@ -1,14 +1,23 @@
 package com.acme.center.platform.learning.domain.model.valueobjects;
 
 /**
- * Enumeration representing the progress status.
- * @summary
- * This enumeration is used to represent the progress status. It is used to indicate the status of the progress of student learning.
- * The possible values are NOT_STARTED, STARTED, and COMPLETED.
- * @since 1.0
+ * Enumeration representing the progress status of a tutorial.
+ *
+ * <p>
+ * This enumeration is used to track the completion status of a specific tutorial for a student enrollment.
+ * </p>
  */
 public enum ProgressStatus {
+    /**
+     * The tutorial has not yet been started.
+     */
     NOT_STARTED,
+    /**
+     * The tutorial is currently in progress.
+     */
     STARTED,
+    /**
+     * The tutorial has been completed.
+     */
     COMPLETED
 }

@@ -8,23 +8,49 @@ import java.util.List;
 
 /**
  * ProgressRecord value object.
+ *
+ * <p>
+ * Represents the progress record for a student's enrollment in a course.
+ * It contains a collection of {@link ProgressRecordItem}s, each tracking the progress of a specific tutorial.
+ * </p>
  */
 public class ProgressRecord {
 
+    /**
+     * The list of items in the progress record.
+     */
     private List<ProgressRecordItem> progressRecordItems;
 
+    /**
+     * Default constructor.
+     * Initializes an empty progress record.
+     */
     public ProgressRecord() {
         progressRecordItems = new ArrayList<>();
     }
 
+    /**
+     * Gets the list of progress record items.
+     * @return The list of progress record items.
+     */
     public List<ProgressRecordItem> getProgressRecordItems() {
         return progressRecordItems;
     }
 
+    /**
+     * Sets the list of progress record items.
+     * @param progressRecordItems The list of progress record items.
+     */
     public void setProgressRecordItems(List<ProgressRecordItem> progressRecordItems) {
         this.progressRecordItems = progressRecordItems == null ? new ArrayList<>() : progressRecordItems;
     }
 
+    /**
+     * Initializes the progress record for an enrollment.
+     * Adds the first tutorial from the learning path to the progress record.
+     * @param enrollment The enrollment associated with the progress record.
+     * @param learningPath The learning path of the course.
+     */
     public void initializeProgressRecord(Enrollment enrollment, LearningPath learningPath) {
         if (learningPath.isEmpty()) return;
         TutorialId tutorialId = learningPath.getFirstTutorialInLearningPath();
@@ -32,6 +58,11 @@ public class ProgressRecord {
         progressRecordItems.add(progressRecordItem);
     }
 
+    /**
+     * Gets a progress record item by its tutorial ID.
+     * @param tutorialId The ID of the tutorial.
+     * @return The progress record item if found, null otherwise.
+     */
     private ProgressRecordItem getProgressRecordItemWithTutorialId(TutorialId tutorialId) {
         return progressRecordItems.stream()
                 .filter(progressRecordItem -> progressRecordItem.getTutorialId().equals(tutorialId))
@@ -39,10 +70,20 @@ public class ProgressRecord {
                 .orElse(null);
     }
 
+    /**
+     * Checks if there is any tutorial currently in progress.
+     * @return true if there is a tutorial in progress, false otherwise.
+     */
     private boolean hasAnItemInProgress() {
         return progressRecordItems.stream().anyMatch(ProgressRecordItem::isInProgress);
     }
 
+    /**
+     * Starts a tutorial in the progress record.
+     * @param tutorialId The ID of the tutorial to start.
+     * @throws IllegalStateException if a tutorial is already in progress or the tutorial is already started/completed.
+     * @throws IllegalArgumentException if the tutorial is not found in the progress record.
+     */
     public void startTutorial(TutorialId tutorialId) {
         if (hasAnItemInProgress()) throw new IllegalStateException("A tutorial is already in progress");
 
@@ -53,6 +94,12 @@ public class ProgressRecord {
         } else throw new IllegalArgumentException("Tutorial with given Id not found in progress record");
     }
 
+    /**
+     * Completes a tutorial in the progress record and adds the next tutorial from the learning path.
+     * @param tutorialId The ID of the tutorial to complete.
+     * @param learningPath The learning path of the course.
+     * @throws IllegalArgumentException if the tutorial is not found in the progress record.
+     */
     public void completeTutorial(TutorialId tutorialId, LearningPath learningPath) {
         ProgressRecordItem progressRecordItem = getProgressRecordItemWithTutorialId(tutorialId);
         if (progressRecordItem != null) progressRecordItem.complete();
@@ -65,6 +112,11 @@ public class ProgressRecord {
         }
     }
 
+    /**
+     * Calculates the total days elapsed for an enrollment based on all its progress record items.
+     * @param enrollment The enrollment.
+     * @return The total number of days elapsed.
+     */
     public long calculateDaysElapsedForEnrollment(Enrollment enrollment) {
         return progressRecordItems.stream()
                 .filter(progressRecordItem -> progressRecordItem.getEnrollment().equals(enrollment))

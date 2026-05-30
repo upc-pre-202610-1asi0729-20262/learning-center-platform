@@ -2,19 +2,30 @@ package com.acme.center.platform.learning.domain.model.valueobjects;
 
 /**
  * Value object representing the student performance metric set.
- * @summary
- * This value object is used to represent the student performance metric set. It is an embeddable object that is used to represent the student performance metric set in the student record entity.
- * It throws an IllegalArgumentException if the total completed courses or total completed tutorials are null or less than 0.
+ *
+ * <p>
+ * This value object is used to track the performance metrics of a student,
+ * specifically the total number of completed courses and tutorials.
+ * It is immutable; any increment operation returns a new instance.
+ * </p>
+ *
  * @param totalCompletedCourses The total number of completed courses. It cannot be null or less than 0.
  * @param totalCompletedTutorials The total number of completed tutorials. It cannot be null or less than 0.
- * @see IllegalArgumentException
- * @since 1.0
  */
 public record StudentPerformanceMetricSet(Integer totalCompletedCourses, Integer totalCompletedTutorials) {
+    /**
+     * Default constructor.
+     * Initializes the metrics with zeros.
+     */
     public StudentPerformanceMetricSet() {
         this(0, 0);
     }
 
+    /**
+     * Compact constructor for StudentPerformanceMetricSet.
+     * Validates that the metrics are not null and are non-negative.
+     * @throws IllegalArgumentException if totalCompletedCourses or totalCompletedTutorials is null or less than 0.
+     */
     public StudentPerformanceMetricSet {
         if (totalCompletedCourses == null || totalCompletedCourses < 0)
             throw new IllegalArgumentException("Total completed courses cannot be null or less than 0");
@@ -24,10 +35,7 @@ public record StudentPerformanceMetricSet(Integer totalCompletedCourses, Integer
 
     /**
      * Increments the total number of completed courses by 1.
-     * @summary
-     * This method is used to increment the total number of completed courses by 1.
-     * @return A new instance of the StudentPerformanceMetricSet value object with the total number of completed courses incremented by 1.
-     * @since 1.0
+     * @return A new instance of StudentPerformanceMetricSet with the incremented course count.
      */
     public StudentPerformanceMetricSet incrementTotalCompletedCourses() {
         return new StudentPerformanceMetricSet(totalCompletedCourses + 1, totalCompletedTutorials);
@@ -35,10 +43,7 @@ public record StudentPerformanceMetricSet(Integer totalCompletedCourses, Integer
 
     /**
      * Increments the total number of completed tutorials by 1.
-     * @summary
-     * This method is used to increment the total number of completed tutorials by 1.
-     * @return A new instance of the StudentPerformanceMetricSet value object with the total number of completed tutorials incremented by 1.
-     * @since 1.0
+     * @return A new instance of StudentPerformanceMetricSet with the incremented tutorial count.
      */
     public StudentPerformanceMetricSet incrementTotalCompletedTutorials() {
         return new StudentPerformanceMetricSet(totalCompletedCourses, totalCompletedTutorials + 1);
