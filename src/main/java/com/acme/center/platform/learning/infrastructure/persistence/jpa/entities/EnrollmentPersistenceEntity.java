@@ -2,9 +2,11 @@ package com.acme.center.platform.learning.infrastructure.persistence.jpa.entitie
 
 import com.acme.center.platform.learning.domain.model.valueobjects.AcmeStudentRecordId;
 import com.acme.center.platform.learning.domain.model.valueobjects.EnrollmentStatus;
+import com.acme.center.platform.learning.infrastructure.persistence.jpa.converters.AcmeStudentRecordIdPersistenceConverter;
 import com.acme.center.platform.shared.infrastructure.persistence.jpa.entities.AuditableAbstractPersistenceEntity;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -31,8 +33,8 @@ import java.util.List;
 @NoArgsConstructor
 public class EnrollmentPersistenceEntity extends AuditableAbstractPersistenceEntity {
 
-    @Embedded
-    @AttributeOverride(name = "studentRecordId", column = @Column(name = "acme_student_id", nullable = false))
+    @Convert(converter = AcmeStudentRecordIdPersistenceConverter.class)
+    @Column(name = "acme_student_id", nullable = false)
     private AcmeStudentRecordId acmeStudentRecordId;
 
     @ManyToOne(fetch = FetchType.LAZY)
