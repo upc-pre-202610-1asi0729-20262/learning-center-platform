@@ -18,7 +18,7 @@ Note: Only `/api/v1/authentication/sign-in` and `/api/v1/authentication/sign-up`
 
 Acceptance criteria:
 - Scenario: Authenticated request succeeds
-  - Given the client obtained a token via `POST /api/v1/authentication/sign-in`
+  - Given the client received a token via `POST /api/v1/authentication/sign-in`
   - When the client sends any request to a protected endpoint with the header `Authorization: Bearer <token>`
   - Then the API processes the request normally and responds with the expected resource.
 - Scenario: Missing token
@@ -45,13 +45,13 @@ Acceptance criteria:
 
 Error code to HTTP status mapping:
 
-| `code` value | HTTP Status | Typical cause |
-|---|---|---|
-| `VALIDATION_ERROR` | `400 Bad Request` | Missing or invalid request field |
-| `*_NOT_FOUND` (e.g., `COURSE_NOT_FOUND`) | `404 Not Found` | Resource does not exist |
-| `*_CONFLICT` (e.g., `USER_CONFLICT`) | `409 Conflict` | Duplicate or conflicting resource |
-| `BUSINESS_RULE_VIOLATION` | `422 Unprocessable Entity` | Operation violates a domain rule |
-| `UNEXPECTED_ERROR` | `500 Internal Server Error` | Unhandled server-side failure |
+| `code` value                             | HTTP Status                 | Typical cause                     |
+|------------------------------------------|-----------------------------|-----------------------------------|
+| `VALIDATION_ERROR`                       | `400 Bad Request`           | Missing or invalid request field  |
+| `*_NOT_FOUND` (e.g., `COURSE_NOT_FOUND`) | `404 Not Found`             | Resource does not exist           |
+| `*_CONFLICT` (e.g., `USER_CONFLICT`)     | `409 Conflict`              | Duplicate or conflicting resource |
+| `BUSINESS_RULE_VIOLATION`                | `422 Unprocessable Entity`  | Operation violates a domain rule  |
+| `UNEXPECTED_ERROR`                       | `500 Internal Server Error` | Unhandled server-side failure     |
 
 Example error response body:
 ```json
