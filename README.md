@@ -23,7 +23,6 @@ ACME Learning Center Platform is a state-of-the-art RESTful API built on the fou
 ## Project Structure
 
 The project is organized into bounded contexts following DDD principles:
-
 ```text
 src/main/java/com/acme/center/platform/
 ├── iam/        # Identity and Access Management (Auth, Users, Roles)
@@ -31,12 +30,6 @@ src/main/java/com/acme/center/platform/
 ├── profiles/   # User Profile lifecycle
 └── shared/     # Shared kernel (Domain bases, Infrastructure, Interfaces)
 ```
-
-Each context is further divided into:
-- `application`: Command and Query services implementing the application logic.
-- `domain`: Aggregates, entities, value objects, and repository interfaces.
-- `infrastructure`: Persistence adapters, external service implementations.
-- `interfaces`: REST controllers, DTOs (resources), and assemblers.
 
 ## Configuration
 
@@ -138,7 +131,7 @@ Note: `.mvn/jvm.config` includes `--sun-misc-unsafe-memory-access=allow` to supp
 ## Development Conventions
 
 - **DDD + CQRS:** Write operations use `CommandService`, read operations use `QueryService`.
-- **Persistence Agnostic:** Domain model stays independent of JPA. Repositories in `domain` are interfaces; implementations live in `infrastructure`.
+- **Persistence Agnostic:** Domain model remains independent of persistence frameworks, ensuring a clear separation between domain logic and infrastructure.
 - **Lombok:** Used for technical boilerplate; avoided in aggregates to maintain invariants.
 - **Error Handling:** Centralized via `GlobalExceptionHandler` and `ResponseEntityAssembler`.
 - **I18n:** Supported via `Accept-Language` header (Default: `en`, also supports `es`).
