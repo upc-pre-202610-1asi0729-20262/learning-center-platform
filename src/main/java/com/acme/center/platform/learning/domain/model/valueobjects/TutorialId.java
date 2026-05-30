@@ -11,7 +11,7 @@ import jakarta.persistence.Embeddable;
  * @see IllegalArgumentException
  * @since 1.0
  */
-@Embeddable
+
 public record TutorialId(Long tutorialId) {
 
     public TutorialId {

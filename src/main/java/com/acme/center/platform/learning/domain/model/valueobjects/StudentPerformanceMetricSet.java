@@ -12,7 +12,6 @@ import jakarta.persistence.Embeddable;
  * @see IllegalArgumentException
  * @since 1.0
  */
-@Embeddable
 public record StudentPerformanceMetricSet(Integer totalCompletedCourses, Integer totalCompletedTutorials) {
     public StudentPerformanceMetricSet() {
         this(0, 0);
