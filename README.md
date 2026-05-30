@@ -1,131 +1,196 @@
 # ACME Learning Center Platform
 
-## Summary
-ACME Learning Center Platform, illustrating development with Java, Spring Boot Framework, and Spring Data JPA on MySQL Database. It also illustrates open-api documentation configuration and integration with Swagger UI.
+ACME Learning Center Platform is a DDD-based REST API built with Spring Boot, Java 26, and MySQL.
+The project follows a modular architecture with bounded contexts and applies CQRS terminology consistently through command and query services.
 
-## Features
-- RESTful API
-- OpenAPI Documentation
-- Swagger UI
-- Spring Boot Framework
-- Spring Data JPA
-- Validation
-- MySQL Database
-- Domain-Driven Design
+## Quick Start
 
-## Bounded Contexts
-This version of ACME Learning Center Platform is divided into three bounded contexts: Profiles, Learning, and IAM.
+### Prerequisites
 
-### Profiles Context
+- Java 26
+- Maven 3.9+
+- MySQL 8+
 
-The Profiles Context is responsible for managing the profiles of the users. It includes the following features:
+### 1) Configure database and app settings
 
-- Create a new profile.
-- Get a profile by id.
-- Get all profiles.
+The project uses profile-based configuration:
 
-This context includes also an anti-corruption layer to communicate with the Learning Context. The anti-corruption layer is responsible for managing the communication between the Profiles Context and the Learning Context. It offers the following capabilities to other bounded contexts:
-- Create a new Profile, returning ID of the created Profile on success.
-- Get a Profile by Email, returning the associated Profile ID on success.
+- `src/main/resources/application.properties` (shared defaults)
+- `src/main/resources/application-dev.properties` (development)
+- `src/main/resources/application-prod.properties` (production)
 
-### Learning Context
+By default, the app runs with `dev` profile unless `SPRING_PROFILES_ACTIVE` is provided.
 
-The Learning Context is responsible for managing the courses, course learning paths and course enrollments. Its features include:
+Environment variables (aligned with `Dockerfile`):
 
-- Create a Course.
-- Get a Course by id.
-- Update a Course information.
-- Delete a Course.
-- Get all Courses.
-- Add an existing Tutorial to Course Learning Path.
-- Register a new Student with implicit profile creation.
-- Submit a Student Enrollment Request in a Course.
-- Cancel a Student Enrollment Request in a Course.
-- Confirm a Student Enrollment Request in a Course.
-- Reject a Student Enrollment Request in a Course.
-- Get all Enrollments for a Course.
+- `DATABASE_URL` (database host)
+- `DATABASE_PORT`
+- `DATABASE_NAME`
+- `DATABASE_USER`
+- `DATABASE_PASSWORD`
+- `PORT`
+- `SPRING_PROFILES_ACTIVE`
+- `JWT_SECRET` (required for `prod`)
 
-This context includes also an anti-corruption layer to communicate with the Profiles Context. The anti-corruption layer is responsible for managing the communication between the Learning Context and the Profiles Context. It consumes the capabilities offered by the Profiles Context to:
+You can start from `.env.example`.
 
-- Create the Profile of a new Student.
-- Get the Profile ID of a Student by Email.
+### 2) Run the application
 
-Tutorial is a concept that represents a learning resource. It is used to build the learning path of a course. The Tutorial aggregate and its publishing lifecycle are part of the Publishing bounded context, which is beyond the scope of this platform version.
+```bash
+SPRING_PROFILES_ACTIVE=dev mvn clean spring-boot:run
+```
 
-### Identity and Access Management (IAM) Context
+Run with production profile (requires all prod env vars):
 
-The IAM Context is responsible for managing platform users, including the sign in and sign up processes. It applies JSON Web Token based authorization and Password hashing. It also adds a request authorization middleware to Spring Boot Pipeline, in order to validate included token in request header on endpoints that require authorization. Its capabilities include:
-- Create a new User (Sign Up).
-- Authenticate a User (Sign In).
-- Get a User by ID.
-- Get All Users.
-- Get All Roles.
-- Use Spring Security features to implement an authorization pipeline based on request filtering.
-- Generate and validate JSON Web Tokens.
-- Apply Password hashing.
+```bash
+SPRING_PROFILES_ACTIVE=prod \
+DATABASE_URL=localhost \
+DATABASE_PORT=3306 \
+DATABASE_NAME=learning-center-os \
+DATABASE_USER=root \
+DATABASE_PASSWORD=password \
+JWT_SECRET=replace-with-a-strong-random-secret \
+PORT=8080 \
+mvn clean spring-boot:run
+```
 
-This version implements the following roles: Admin, Instructor, and Student. The roles are used to manage the access to the platform features. The Admin role has access to all features, the Instructor and Student roles should have access according to business rules.
+### 3) Open API docs
 
-This context includes also an anti-corruption layer. The anti-corruption layer is responsible for managing the communication between the IAM Context and other bounded Contexts. Its capabilities include:
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
+- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
 
-- Create a new User, returning ID of the created User on success. If roles are provided, it will also assign them to the user, otherwise the default role is assigned.
-- Get a User by ID, returning the associated User ID on success.
-- Get a User by Username, returning the associated User ID on success.
+## Build and Test
 
-- In this version, Open API documentation includes support for JSON Web Token based authorization.
+```bash
+mvn clean compile
+mvn test
+```
 
-### Reference Documentation
+Run tests with explicit development profile if needed:
 
-For further reference, please consider the following sections:
+```bash
+SPRING_PROFILES_ACTIVE=dev mvn test
+```
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/3.5.6/maven-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/3.3.4/maven-plugin/build-image.html)
-* [Spring Data JPA](https://docs.spring.io/spring-boot/docs/3.5.6/reference/htmlsingle/index.html#data.sql.jpa-and-spring-data)
-* [Spring Boot DevTools](https://docs.spring.io/spring-boot/docs/3.5.6/reference/htmlsingle/index.html#using.devtools)
-* [Validation](https://docs.spring.io/spring-boot/docs/3.5.6/reference/htmlsingle/index.html#io.validation)
-* [Spring Web](https://docs.spring.io/spring-boot/docs/3.5.6/reference/htmlsingle/index.html#web)
+Note: `.mvn/jvm.config` includes `--sun-misc-unsafe-memory-access=allow` to suppress Java 26 terminal deprecation warnings emitted by Lombok internals.
 
-### Guides
+## Architecture Overview
 
-The following guides illustrate how to use some features concretely:
+The platform is split into three bounded contexts:
 
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
-* [Accessing data with MySQL](https://spring.io/guides/gs/accessing-data-mysql/)
-* [Validation](https://spring.io/guides/gs/validating-form-input/)
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
+- `profiles`: user profile lifecycle and profile lookup capabilities
+- `learning`: courses, learning paths, students, and enrollments
+- `iam`: authentication, user/role management, JWT issuance and verification
 
-### Maven Parent overrides
+Cross-context communication is implemented via explicit anti-corruption layer (ACL) interfaces and adapters.
 
-Due to Maven's design, elements are inherited from the parent POM to the project POM.
-While most of the inheritance is fine, it also inherits unwanted elements like `<license>` and `<developers>` from the
-parent.
-To prevent this, the project POM contains empty overrides for these elements.
-If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
+## API Surface (by Context)
+
+- Profiles: `/api/v1/profiles`
+- Learning:
+  - `/api/v1/courses`
+  - `/api/v1/courses/{courseId}/learning-path-items`
+  - `/api/v1/students`
+  - `/api/v1/students/{studentRecordId}/enrollments`
+  - `/api/v1/enrollments`
+- IAM:
+  - `/api/v1/authentication`
+  - `/api/v1/users`
+  - `/api/v1/roles`
+
+## Security Model
+
+- JWT-based stateless authentication
+- Password hashing via BCrypt
+- Open endpoints:
+  - `/api/v1/authentication/**`
+  - `/v3/api-docs/**`
+  - `/swagger-ui.html`
+  - `/swagger-ui/**`
+  - `/swagger-resources/**`
+  - `/webjars/**`
+- All other endpoints require authentication
+
+### Get a token (example)
+
+```bash
+curl -X POST "http://localhost:8080/api/v1/authentication/sign-in" \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin"}'
+```
+
+Then include:
+
+```bash
+Authorization: Bearer <your-token>
+```
+
+## DDD + CQRS Conventions Used
+
+- Write operations are represented as commands and handled by `*CommandService`.
+- Read operations are represented as queries and handled by `*QueryService`.
+- Domain model stays persistence-agnostic.
+- Repository ports live in `*/domain/repositories`.
+- JPA repositories target persistence entities and are named `*PersistenceRepository`.
+- Infrastructure adapters bridge domain repositories and JPA persistence.
+
+## Error Handling and I18n
+
+- Application flow uses `Result<T, ApplicationError>` in the application layer.
+- REST responses are assembled centrally through `ResponseEntityAssembler` and `ErrorResponseAssembler`.
+- Global exception handling is implemented in `shared/interfaces/rest/GlobalExceptionHandler`.
+- Localized messages are supported through `Accept-Language` using `messages*.properties` bundles.
+- Currently supported locales: `en` (default), `es`.
+
+## Project Structure
+
+```text
+src/main/java/com/acme/center/platform/
+  iam/
+  learning/
+  profiles/
+  shared/
+```
+
+Each bounded context is organized around:
+
+- `application` (command/query services)
+- `domain` (aggregates, entities, value objects, commands, queries)
+- `infrastructure` (persistence adapters, technical services)
+- `interfaces` (REST controllers/resources/assemblers)
+
+## Development Conventions
 
 ### Layering and Persistence Boundaries
 
-The three bounded contexts now follow a clean separation between domain and persistence concerns:
-
-- Domain aggregates, entities, and value objects live under each context `domain` package and are persistence-agnostic.
-- Domain repository ports live under each context `domain/repositories` package.
-- Spring Data JPA repositories now target persistence entities only and are named with `*PersistenceRepository`.
+- Domain aggregates, entities, and value objects live in context `domain` packages and remain persistence-agnostic.
+- Domain repository ports live under context `domain/repositories` packages.
+- Spring Data JPA repositories target persistence entities only (`*PersistenceRepository`).
 - Repository adapters in infrastructure bridge domain repository ports and persistence repositories.
-- Shared mixed JPA/domain bases were retired. Domain aggregates use `shared/domain/model/aggregates/AbstractDomainAggregateRoot`, while persistence entities use infrastructure persistence bases such as `shared/infrastructure/persistence/jpa/entities/AuditableAbstractPersistenceEntity` when needed.
+- Shared bases are separated: domain aggregates use `shared/domain/model/aggregates/AbstractDomainAggregateRoot`, while persistence entities use infrastructure persistence bases such as `shared/infrastructure/persistence/jpa/entities/AuditableAbstractPersistenceEntity`.
 
 ### Lombok Usage Convention
 
-To preserve clarity and domain intent, Lombok is used selectively:
-
-- Domain model (`*/domain/*`): prefer explicit behavior methods; allow Lombok only for trivial accessors when it does not hide invariants.
-- Avoid `@Data` in aggregates/entities to prevent accidental broad mutability and generated semantics that are not domain-driven.
-- Infrastructure/persistence (`*/infrastructure/*`): Lombok can be used more broadly for boilerplate reduction in technical models.
-- REST resources favor Java records over Lombok annotations.
+- Domain model (`*/domain/*`): prefer explicit behavior; use Lombok only when it does not hide invariants.
+- Avoid `@Data` in aggregates/entities to prevent accidental broad mutability.
+- Infrastructure (`*/infrastructure/*`): Lombok can be used more broadly for technical boilerplate.
+- REST resources favor Java records.
 
 ### Logging Convention
 
 - Use Lombok `@Slf4j` for technical logging in application handlers, controllers, filters, and infrastructure services.
-- Keep domain model classes (`*/domain/*`) free from logging framework annotations to preserve domain purity.
+- Keep domain model classes (`*/domain/*`) free from logging framework annotations.
+
+## Additional Documentation
+
+- `docs/user-stories.md`
+- `docs/class-diagram.puml`
+- `docs/software-architecture.dsl`
+
+## Reference Links
+
+- Maven: https://maven.apache.org/guides/index.html
+- Spring Boot: https://docs.spring.io/spring-boot/
+- Spring Data JPA: https://docs.spring.io/spring-data/jpa/reference/
+- Spring Security: https://docs.spring.io/spring-security/reference/
 
