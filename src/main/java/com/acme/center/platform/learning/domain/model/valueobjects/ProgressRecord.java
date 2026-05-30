@@ -2,6 +2,7 @@ package com.acme.center.platform.learning.domain.model.valueobjects;
 
 import com.acme.center.platform.learning.domain.model.aggregates.Enrollment;
 import com.acme.center.platform.learning.domain.model.entities.ProgressRecordItem;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,8 @@ public class ProgressRecord {
     /**
      * The list of items in the progress record.
      */
+
+    @Getter
     private List<ProgressRecordItem> progressRecordItems;
 
     /**
@@ -27,14 +30,6 @@ public class ProgressRecord {
      */
     public ProgressRecord() {
         progressRecordItems = new ArrayList<>();
-    }
-
-    /**
-     * Gets the list of progress record items.
-     * @return The list of progress record items.
-     */
-    public List<ProgressRecordItem> getProgressRecordItems() {
-        return progressRecordItems;
     }
 
     /**
@@ -81,7 +76,7 @@ public class ProgressRecord {
     /**
      * Starts a tutorial in the progress record.
      * @param tutorialId The ID of the tutorial to start.
-     * @throws IllegalStateException if a tutorial is already in progress or the tutorial is already started/completed.
+     * @throws IllegalStateException if a tutorial is already in progress, or the tutorial is already started/completed.
      * @throws IllegalArgumentException if the tutorial is not found in the progress record.
      */
     public void startTutorial(TutorialId tutorialId) {

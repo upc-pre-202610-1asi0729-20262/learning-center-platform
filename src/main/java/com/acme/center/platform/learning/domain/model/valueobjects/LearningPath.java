@@ -2,6 +2,7 @@ package com.acme.center.platform.learning.domain.model.valueobjects;
 
 import com.acme.center.platform.learning.domain.model.aggregates.Course;
 import com.acme.center.platform.learning.domain.model.entities.LearningPathItem;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ public class LearningPath {
     /**
      * The list of items in the learning path.
      */
+    @Getter
     private List<LearningPathItem> learningPathItems;
 
     /**
@@ -28,14 +30,6 @@ public class LearningPath {
      */
     public LearningPath() {
         this.learningPathItems = new ArrayList<>();
-    }
-
-    /**
-     * Gets the list of learning path items.
-     * @return The list of learning path items.
-     */
-    public List<LearningPathItem> getLearningPathItems() {
-        return learningPathItems;
     }
 
     /**
