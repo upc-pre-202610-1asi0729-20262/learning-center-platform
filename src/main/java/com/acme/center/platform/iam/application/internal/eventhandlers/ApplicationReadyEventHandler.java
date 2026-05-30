@@ -1,7 +1,7 @@
 package com.acme.center.platform.iam.application.internal.eventhandlers;
 
-import com.acme.center.platform.iam.domain.model.commands.SeedRolesCommand;
 import com.acme.center.platform.iam.application.commandservices.RoleCommandService;
+import com.acme.center.platform.iam.domain.model.commands.SeedRolesCommand;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;

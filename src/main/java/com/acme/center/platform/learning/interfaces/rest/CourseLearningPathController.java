@@ -1,10 +1,10 @@
 package com.acme.center.platform.learning.interfaces.rest;
 
+import com.acme.center.platform.learning.application.commandservices.CourseCommandService;
+import com.acme.center.platform.learning.application.queryservices.CourseQueryService;
 import com.acme.center.platform.learning.domain.model.commands.AddTutorialToCourseLearningPathCommand;
 import com.acme.center.platform.learning.domain.model.queries.GetLearningPathItemByCourseIdAndTutorialIdQuery;
 import com.acme.center.platform.learning.domain.model.valueobjects.TutorialId;
-import com.acme.center.platform.learning.application.commandservices.CourseCommandService;
-import com.acme.center.platform.learning.application.queryservices.CourseQueryService;
 import com.acme.center.platform.learning.interfaces.rest.resources.LearningPathItemResource;
 import com.acme.center.platform.learning.interfaces.rest.transform.LearningPathItemResourceFromEntityAssembler;
 import com.acme.center.platform.shared.application.result.ApplicationError;

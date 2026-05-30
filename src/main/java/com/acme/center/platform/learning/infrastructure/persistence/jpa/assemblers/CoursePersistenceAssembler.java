@@ -8,7 +8,6 @@ import com.acme.center.platform.learning.infrastructure.persistence.jpa.entities
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Static assembler between course domain and persistence representations.

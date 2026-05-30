@@ -2,11 +2,7 @@ package com.acme.center.platform.learning.application.internal.commandservices;
 
 import com.acme.center.platform.learning.application.commandservices.EnrollmentCommandService;
 import com.acme.center.platform.learning.domain.model.aggregates.Enrollment;
-import com.acme.center.platform.learning.domain.model.commands.CancelEnrollmentCommand;
-import com.acme.center.platform.learning.domain.model.commands.CompleteTutorialForEnrollmentCommand;
-import com.acme.center.platform.learning.domain.model.commands.ConfirmEnrollmentCommand;
-import com.acme.center.platform.learning.domain.model.commands.RejectEnrollmentCommand;
-import com.acme.center.platform.learning.domain.model.commands.RequestEnrollmentCommand;
+import com.acme.center.platform.learning.domain.model.commands.*;
 import com.acme.center.platform.learning.domain.repositories.CourseRepository;
 import com.acme.center.platform.learning.domain.repositories.EnrollmentRepository;
 import com.acme.center.platform.learning.domain.repositories.StudentRepository;

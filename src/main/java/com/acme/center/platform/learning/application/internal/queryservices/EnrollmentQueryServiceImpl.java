@@ -2,11 +2,7 @@ package com.acme.center.platform.learning.application.internal.queryservices;
 
 import com.acme.center.platform.learning.application.queryservices.EnrollmentQueryService;
 import com.acme.center.platform.learning.domain.model.aggregates.Enrollment;
-import com.acme.center.platform.learning.domain.model.queries.GetAllEnrollmentsByAcmeStudentRecordIdQuery;
-import com.acme.center.platform.learning.domain.model.queries.GetAllEnrollmentsByCourseIdQuery;
-import com.acme.center.platform.learning.domain.model.queries.GetAllEnrollmentsQuery;
-import com.acme.center.platform.learning.domain.model.queries.GetEnrollmentByAcmeStudentRecordIdAndCourseIdQuery;
-import com.acme.center.platform.learning.domain.model.queries.GetEnrollmentByIdQuery;
+import com.acme.center.platform.learning.domain.model.queries.*;
 import com.acme.center.platform.learning.domain.repositories.EnrollmentRepository;
 import org.springframework.stereotype.Service;
 

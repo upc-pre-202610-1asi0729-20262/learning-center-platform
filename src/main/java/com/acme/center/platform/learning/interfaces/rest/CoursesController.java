@@ -1,10 +1,10 @@
 package com.acme.center.platform.learning.interfaces.rest;
 
+import com.acme.center.platform.learning.application.commandservices.CourseCommandService;
+import com.acme.center.platform.learning.application.queryservices.CourseQueryService;
 import com.acme.center.platform.learning.domain.model.commands.DeleteCourseCommand;
 import com.acme.center.platform.learning.domain.model.queries.GetAllCoursesQuery;
 import com.acme.center.platform.learning.domain.model.queries.GetCourseByIdQuery;
-import com.acme.center.platform.learning.application.commandservices.CourseCommandService;
-import com.acme.center.platform.learning.application.queryservices.CourseQueryService;
 import com.acme.center.platform.learning.interfaces.rest.resources.CourseResource;
 import com.acme.center.platform.learning.interfaces.rest.resources.CreateCourseResource;
 import com.acme.center.platform.learning.interfaces.rest.resources.UpdateCourseResource;

@@ -1,10 +1,10 @@
 package com.acme.center.platform.learning.application.internal.eventhandlers;
 
+import com.acme.center.platform.learning.application.commandservices.StudentCommandService;
+import com.acme.center.platform.learning.application.queryservices.EnrollmentQueryService;
 import com.acme.center.platform.learning.domain.model.commands.UpdateStudentMetricsOnTutorialCompletedCommand;
 import com.acme.center.platform.learning.domain.model.events.TutorialCompletedEvent;
 import com.acme.center.platform.learning.domain.model.queries.GetEnrollmentByIdQuery;
-import com.acme.center.platform.learning.application.queryservices.EnrollmentQueryService;
-import com.acme.center.platform.learning.application.commandservices.StudentCommandService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;

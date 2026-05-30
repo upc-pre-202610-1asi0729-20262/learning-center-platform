@@ -4,7 +4,7 @@ import com.acme.center.platform.iam.domain.model.commands.SignUpCommand;
 import com.acme.center.platform.iam.domain.model.entities.Role;
 import com.acme.center.platform.iam.interfaces.rest.resources.SignUpResource;
 
-import java.util.*;
+import java.util.ArrayList;
 
 /**
  * Assembler that translates {@link SignUpResource} into {@link SignUpCommand}.

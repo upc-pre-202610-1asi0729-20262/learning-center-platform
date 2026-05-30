@@ -1,7 +1,6 @@
 package com.acme.center.platform.profiles.infrastructure.persistence.jpa.assemblers;
 
 import com.acme.center.platform.profiles.domain.model.aggregates.Profile;
-import com.acme.center.platform.profiles.domain.model.valueobjects.EmailAddress;
 import com.acme.center.platform.profiles.domain.model.valueobjects.PersonName;
 import com.acme.center.platform.profiles.domain.model.valueobjects.StreetAddress;
 import com.acme.center.platform.profiles.infrastructure.persistence.jpa.embeddables.PersonNamePersistenceEmbeddable;

@@ -1,9 +1,9 @@
 package com.acme.center.platform.learning.interfaces.rest;
 
-import com.acme.center.platform.learning.domain.model.queries.GetStudentByAcmeStudentRecordIdQuery;
-import com.acme.center.platform.learning.domain.model.valueobjects.AcmeStudentRecordId;
 import com.acme.center.platform.learning.application.commandservices.StudentCommandService;
 import com.acme.center.platform.learning.application.queryservices.StudentQueryService;
+import com.acme.center.platform.learning.domain.model.queries.GetStudentByAcmeStudentRecordIdQuery;
+import com.acme.center.platform.learning.domain.model.valueobjects.AcmeStudentRecordId;
 import com.acme.center.platform.learning.interfaces.rest.resources.CreateStudentResource;
 import com.acme.center.platform.learning.interfaces.rest.resources.StudentResource;
 import com.acme.center.platform.learning.interfaces.rest.transform.CreateStudentCommandFromResourceAssembler;

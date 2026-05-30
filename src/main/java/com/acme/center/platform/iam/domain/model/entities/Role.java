@@ -1,13 +1,7 @@
 package com.acme.center.platform.iam.domain.model.entities;
 
 import com.acme.center.platform.iam.domain.model.valueobjects.Roles;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.With;
+import lombok.*;
 
 import java.util.List;
 

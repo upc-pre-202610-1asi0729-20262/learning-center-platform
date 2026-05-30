@@ -1,7 +1,7 @@
 package com.acme.center.platform.iam.interfaces.rest;
 
-import com.acme.center.platform.iam.domain.model.queries.GetAllRolesQuery;
 import com.acme.center.platform.iam.application.queryservices.RoleQueryService;
+import com.acme.center.platform.iam.domain.model.queries.GetAllRolesQuery;
 import com.acme.center.platform.iam.interfaces.rest.resources.RoleResource;
 import com.acme.center.platform.iam.interfaces.rest.transform.RoleResourceFromEntityAssembler;
 import io.swagger.v3.oas.annotations.Operation;

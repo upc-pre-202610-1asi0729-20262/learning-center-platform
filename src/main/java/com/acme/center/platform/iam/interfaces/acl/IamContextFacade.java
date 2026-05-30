@@ -1,11 +1,11 @@
 package com.acme.center.platform.iam.interfaces.acl;
 
+import com.acme.center.platform.iam.application.commandservices.UserCommandService;
+import com.acme.center.platform.iam.application.queryservices.UserQueryService;
 import com.acme.center.platform.iam.domain.model.commands.SignUpCommand;
 import com.acme.center.platform.iam.domain.model.entities.Role;
 import com.acme.center.platform.iam.domain.model.queries.GetUserByIdQuery;
 import com.acme.center.platform.iam.domain.model.queries.GetUserByUsernameQuery;
-import com.acme.center.platform.iam.application.commandservices.UserCommandService;
-import com.acme.center.platform.iam.application.queryservices.UserQueryService;
 import org.apache.logging.log4j.util.Strings;
 
 import java.util.ArrayList;
