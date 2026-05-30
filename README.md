@@ -1,196 +1,156 @@
 # ACME Learning Center Platform
 
-ACME Learning Center Platform is a DDD-based REST API built with Spring Boot, Java 26, and MySQL.
-The project follows a modular architecture with bounded contexts and applies CQRS terminology consistently through command and query services.
+ACME Learning Center Platform is a state-of-the-art RESTful API built on the foundations of Domain-Driven Design (DDD). Developed with Java 26, Spring Boot 4, and MySQL, the platform provides a robust and scalable solution for managing educational ecosystems. It features a modular architecture organized into bounded contexts and strictly adheres to Command Query Responsibility Segregation (CQRS) principles, ensuring a clean separation between data modification and retrieval operations.
 
-## Quick Start
+## Tech Stack
 
-### Prerequisites
+- **Language:** Java 26
+- **Framework:** Spring Boot 4.0.6
+- **Database:** MySQL 8+
+- **Persistence:** Spring Data JPA / Hibernate
+- **Security:** Spring Security with JWT (JSON Web Tokens)
+- **Documentation:** SpringDoc OpenAPI (Swagger UI)
+- **Build Tool:** Maven 3.9+
+- **Containerization:** Docker
 
-- Java 26
+## Prerequisites
+
+- Java 26 JDK
 - Maven 3.9+
-- MySQL 8+
+- MySQL 8.0+
+- Docker (optional)
 
-### 1) Configure database and app settings
+## Project Structure
 
-The project uses profile-based configuration:
+The project is organized into bounded contexts following DDD principles:
 
-- `src/main/resources/application.properties` (shared defaults)
-- `src/main/resources/application-dev.properties` (development)
-- `src/main/resources/application-prod.properties` (production)
-
-By default, the app runs with `dev` profile unless `SPRING_PROFILES_ACTIVE` is provided.
-
-Environment variables (aligned with `Dockerfile`):
-
-- `DATABASE_URL` (database host)
-- `DATABASE_PORT`
-- `DATABASE_NAME`
-- `DATABASE_USER`
-- `DATABASE_PASSWORD`
-- `PORT`
-- `SPRING_PROFILES_ACTIVE`
-- `JWT_SECRET` (required for `prod`)
-
-You can start from `.env.example`.
-
-### 2) Run the application
-
-```bash
-SPRING_PROFILES_ACTIVE=dev mvn clean spring-boot:run
+```text
+src/main/java/com/acme/center/platform/
+├── iam/        # Identity and Access Management (Auth, Users, Roles)
+├── learning/   # Learning context (Courses, Students, Enrollments)
+├── profiles/   # User Profile lifecycle
+└── shared/     # Shared kernel (Domain bases, Infrastructure, Interfaces)
 ```
 
-Run with production profile (requires all prod env vars):
+Each context is further divided into:
+- `application`: Command and Query services implementing the application logic.
+- `domain`: Aggregates, entities, value objects, and repository interfaces.
+- `infrastructure`: Persistence adapters, external service implementations.
+- `interfaces`: REST controllers, DTOs (resources), and assemblers.
 
+## Configuration
+
+The project uses profile-based configuration located in `src/main/resources`:
+- `application.properties`: Shared defaults.
+- `application-dev.properties`: Development settings (default).
+- `application-prod.properties`: Production settings.
+
+### Environment Variables
+
+Required environment variables (especially for the `prod` profile):
+
+| Variable | Description | Default (Dev) |
+|----------|-------------|---------------|
+| `DATABASE_URL` | MySQL host address | `localhost` |
+| `DATABASE_PORT` | MySQL port | `3306` |
+| `DATABASE_NAME` | Database name | `learning_center_platform` |
+| `DATABASE_USER` | Database username | `root` |
+| `DATABASE_PASSWORD` | Database password | `password` |
+| `PORT` | Application port | `8080` |
+| `SPRING_PROFILES_ACTIVE` | Active Spring profile | `dev` |
+| `JWT_SECRET` | Secret key for JWT signing | `replace-with-a-strong-random-secret` |
+
+## Getting Started
+
+### 1) Database Setup
+Ensure MySQL is running and create the database specified in `DATABASE_NAME`.
+
+### 2) Run the Application
+
+#### Using Maven
 ```bash
+# Run with default 'dev' profile
+./mvnw clean spring-boot:run
+
+# Run with specific profile and environment variables
 SPRING_PROFILES_ACTIVE=prod \
 DATABASE_URL=localhost \
 DATABASE_PORT=3306 \
 DATABASE_NAME=learning-center-os \
 DATABASE_USER=root \
 DATABASE_PASSWORD=password \
-JWT_SECRET=replace-with-a-strong-random-secret \
+JWT_SECRET=your-secret \
 PORT=8080 \
-mvn clean spring-boot:run
+./mvnw clean spring-boot:run
 ```
 
-### 3) Open API docs
-
-- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
-- OpenAPI JSON: `http://localhost:8080/v3/api-docs`
-
-## Build and Test
-
+#### Using Docker
 ```bash
-mvn clean compile
-mvn test
+# Build the image
+docker build -t acme-learning-platform .
+
+# Run the container
+docker run -p 8080:8080 \
+  -e DATABASE_URL=host.docker.internal \
+  -e DATABASE_NAME=learning-center-os \
+  -e DATABASE_USER=root \
+  -e DATABASE_PASSWORD=password \
+  -e JWT_SECRET=your-secret \
+  acme-learning-platform
 ```
 
-Run tests with explicit development profile if needed:
+### 3) API Documentation
+Once running, access the interactive documentation at:
+- **Swagger UI:** `http://localhost:8080/swagger-ui/index.html`
+- **OpenAPI JSON:** `http://localhost:8080/v3/api-docs`
 
-```bash
-SPRING_PROFILES_ACTIVE=dev mvn test
-```
+## Scripts and Commands
 
-Note: `.mvn/jvm.config` includes `--sun-misc-unsafe-memory-access=allow` to suppress Java 26 terminal deprecation warnings emitted by Lombok internals.
+- `mvn clean compile`: Compile the project.
+- `mvn test`: Run unit and integration tests.
+- `mvn package`: Package the application into a JAR file.
+- `mvn spring-boot:run`: Launch the application.
 
-## Architecture Overview
+Note: `.mvn/jvm.config` includes `--sun-misc-unsafe-memory-access=allow` to suppress Java 26 terminal deprecation warnings.
 
-The platform is split into three bounded contexts:
+## API Surface
 
-- `profiles`: user profile lifecycle and profile lookup capabilities
-- `learning`: courses, learning paths, students, and enrollments
-- `iam`: authentication, user/role management, JWT issuance and verification
+### IAM (Identity and Access Management)
+- `POST /api/v1/authentication/sign-up`: Register a new user.
+- `POST /api/v1/authentication/sign-in`: Authenticate and get a JWT.
+- `/api/v1/users`: User management.
+- `/api/v1/roles`: Role management.
 
-Cross-context communication is implemented via explicit anti-corruption layer (ACL) interfaces and adapters.
+### Learning
+- `/api/v1/courses`: Course management.
+- `/api/v1/students`: Student management.
+- `/api/v1/enrollments`: Enrollment management.
 
-## API Surface (by Context)
-
-- Profiles: `/api/v1/profiles`
-- Learning:
-  - `/api/v1/courses`
-  - `/api/v1/courses/{courseId}/learning-path-items`
-  - `/api/v1/students`
-  - `/api/v1/students/{studentRecordId}/enrollments`
-  - `/api/v1/enrollments`
-- IAM:
-  - `/api/v1/authentication`
-  - `/api/v1/users`
-  - `/api/v1/roles`
+### Profiles
+- `/api/v1/profiles`: User profile management.
 
 ## Security Model
 
-- JWT-based stateless authentication
-- Password hashing via BCrypt
-- Open endpoints:
-  - `/api/v1/authentication/**`
-  - `/v3/api-docs/**`
-  - `/swagger-ui.html`
-  - `/swagger-ui/**`
-  - `/swagger-resources/**`
-  - `/webjars/**`
-- All other endpoints require authentication
-
-### Get a token (example)
-
-```bash
-curl -X POST "http://localhost:8080/api/v1/authentication/sign-in" \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin"}'
-```
-
-Then include:
-
-```bash
-Authorization: Bearer <your-token>
-```
-
-## DDD + CQRS Conventions Used
-
-- Write operations are represented as commands and handled by `*CommandService`.
-- Read operations are represented as queries and handled by `*QueryService`.
-- Domain model stays persistence-agnostic.
-- Repository ports live in `*/domain/repositories`.
-- JPA repositories target persistence entities and are named `*PersistenceRepository`.
-- Infrastructure adapters bridge domain repositories and JPA persistence.
-
-## Error Handling and I18n
-
-- Application flow uses `Result<T, ApplicationError>` in the application layer.
-- REST responses are assembled centrally through `ResponseEntityAssembler` and `ErrorResponseAssembler`.
-- Global exception handling is implemented in `shared/interfaces/rest/GlobalExceptionHandler`.
-- Localized messages are supported through `Accept-Language` using `messages*.properties` bundles.
-- Currently supported locales: `en` (default), `es`.
-
-## Project Structure
-
-```text
-src/main/java/com/acme/center/platform/
-  iam/
-  learning/
-  profiles/
-  shared/
-```
-
-Each bounded context is organized around:
-
-- `application` (command/query services)
-- `domain` (aggregates, entities, value objects, commands, queries)
-- `infrastructure` (persistence adapters, technical services)
-- `interfaces` (REST controllers/resources/assemblers)
+- **Authentication:** Stateless JWT-based.
+- **Password Storage:** BCrypt hashing.
+- **Authorization:** Token must be included in the header: `Authorization: Bearer <token>`.
 
 ## Development Conventions
 
-### Layering and Persistence Boundaries
-
-- Domain aggregates, entities, and value objects live in context `domain` packages and remain persistence-agnostic.
-- Domain repository ports live under context `domain/repositories` packages.
-- Spring Data JPA repositories target persistence entities only (`*PersistenceRepository`).
-- Repository adapters in infrastructure bridge domain repository ports and persistence repositories.
-- Shared bases are separated: domain aggregates use `shared/domain/model/aggregates/AbstractDomainAggregateRoot`, while persistence entities use infrastructure persistence bases such as `shared/infrastructure/persistence/jpa/entities/AuditableAbstractPersistenceEntity`.
-
-### Lombok Usage Convention
-
-- Domain model (`*/domain/*`): prefer explicit behavior; use Lombok only when it does not hide invariants.
-- Avoid `@Data` in aggregates/entities to prevent accidental broad mutability.
-- Infrastructure (`*/infrastructure/*`): Lombok can be used more broadly for technical boilerplate.
-- REST resources favor Java records.
-
-### Logging Convention
-
-- Use Lombok `@Slf4j` for technical logging in application handlers, controllers, filters, and infrastructure services.
-- Keep domain model classes (`*/domain/*`) free from logging framework annotations.
+- **DDD + CQRS:** Write operations use `CommandService`, read operations use `QueryService`.
+- **Persistence Agnostic:** Domain model stays independent of JPA. Repositories in `domain` are interfaces; implementations live in `infrastructure`.
+- **Lombok:** Used for technical boilerplate; avoided in aggregates to maintain invariants.
+- **Error Handling:** Centralized via `GlobalExceptionHandler` and `ResponseEntityAssembler`.
+- **I18n:** Supported via `Accept-Language` header (Default: `en`, also supports `es`).
 
 ## Additional Documentation
 
-- `docs/user-stories.md`
-- `docs/class-diagram.puml`
-- `docs/software-architecture.dsl`
+Refer to the `docs/` folder for more details:
+- [User Stories](docs/user-stories.md).
+- [Software Architecture (Structurizr DSL)](docs/software-architecture.dsl).
+- [Class Diagrams (PlantUML)](docs/class-diagram.puml).
 
-## Reference Links
+## License
 
-- Maven: https://maven.apache.org/guides/index.html
-- Spring Boot: https://docs.spring.io/spring-boot/
-- Spring Data JPA: https://docs.spring.io/spring-data/jpa/reference/
-- Spring Security: https://docs.spring.io/spring-security/reference/
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
 
