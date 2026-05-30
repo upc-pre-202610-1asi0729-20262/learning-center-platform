@@ -258,7 +258,7 @@ Acceptance criteria:
   - Then API responds `200 OK` with a list of items containing: id, fullName, email, streetAddress.
   - Given GET `/api/v1/profiles` is received and no profiles exist
   - When the API finds no profiles
-  - Then API responds `404 Not Found` and returns an error payload.
+  - Then the API responds with an empty list and responds `200 OK`.
 
 ---
 
