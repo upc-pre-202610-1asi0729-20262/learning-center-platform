@@ -9,7 +9,7 @@ import java.util.List;
 @Schema(
     name = "UserResponse",
     description = "User information response",
-    example = "{\"id\": 1, \"username\": \"john.doe\", \"roles\": [\"STUDENT\", \"INSTRUCTOR\"]}"
+    example = "{\"id\": 1, \"username\": \"john.doe\", \"roles\": [\"ROLE_USER\", \"ROLE_INSTRUCTOR\"]}"
 )
 public record UserResource(
     @Schema(description = "User unique identifier", example = "1")
@@ -18,7 +18,7 @@ public record UserResource(
     @Schema(description = "User username", example = "john.doe")
     String username,
 
-    @Schema(description = "User assigned roles", example = "[\"STUDENT\"]")
+    @Schema(description = "User assigned roles", example = "[\"ROLE_USER\"]")
     List<String> roles
 ) {
 }
