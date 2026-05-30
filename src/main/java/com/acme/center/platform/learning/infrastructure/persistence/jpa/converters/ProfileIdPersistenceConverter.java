@@ -7,7 +7,7 @@ import jakarta.persistence.Converter;
 /**
  * Converts profile IDs between the domain model and persistence column values.
  */
-@Converter(autoApply = true)
+@Converter(autoApply = false)
 public class ProfileIdPersistenceConverter implements AttributeConverter<ProfileId, Long> {
 
     @Override

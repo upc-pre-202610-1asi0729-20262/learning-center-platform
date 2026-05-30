@@ -7,7 +7,7 @@ import jakarta.persistence.Converter;
 /**
  * Converts ACME student record IDs between the domain model and persistence column values.
  */
-@Converter(autoApply = true)
+@Converter(autoApply = false)
 public class AcmeStudentRecordIdPersistenceConverter implements AttributeConverter<AcmeStudentRecordId, String> {
 
     @Override
