@@ -31,20 +31,16 @@ public class StudentCommandServiceImpl implements StudentCommandService {
         var profileId = externalProfileService.fetchProfileByEmail(command.email());
 
         if (profileId.isEmpty()) {
-            profileId = externalProfileService.createProfile(
-                    command.firstName(), command.lastName(), command.email(),
-                    command.street(), command.number(), command.city(),
-                    command.postalCode(), command.country());
-
-            if (profileId.isEmpty()) {
-                return Result.failure(ApplicationError.unexpected("create-student", "Unable to create student profile"));
-            }
-
-            return studentRepository.findByProfileId(profileId.get())
-                    .map(student -> Result.<AcmeStudentRecordId, ApplicationError>success(student.getAcmeStudentRecordId()))
-                    .orElseGet(() -> Result.failure(
-                            ApplicationError.unexpected("create-student", "Student record not found after profile creation")
-                    ));
+            return externalProfileService.createProfile(
+                            command.firstName(), command.lastName(), command.email(),
+                            command.street(), command.number(), command.city(),
+                            command.postalCode(), command.country())
+                    .map(id -> studentRepository.findByProfileId(id)
+                            .map(student -> Result.<AcmeStudentRecordId, ApplicationError>success(student.getAcmeStudentRecordId()))
+                            .orElseGet(() -> Result.failure(
+                                    ApplicationError.unexpected("create-student", "Student record not found after profile creation")
+                            )))
+                    .orElseGet(() -> Result.failure(ApplicationError.unexpected("create-student", "Unable to create student profile")));
         }
 
         var existingStudent = studentRepository.findByProfileId(profileId.get());

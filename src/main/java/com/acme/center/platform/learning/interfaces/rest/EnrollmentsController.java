@@ -116,7 +116,7 @@ public class EnrollmentsController {
     ) {
         var confirmEnrollmentCommand = new ConfirmEnrollmentCommand(enrollmentId);
         var result = enrollmentCommandService.handle(confirmEnrollmentCommand)
-                .map(confirmedEnrollmentId -> new MessageResource("Enrollment confirmed successfully"));
+                .map(_ -> new MessageResource("Enrollment confirmed successfully"));
         return ResponseEntityAssembler.toResponseEntityFromResult(result, message -> message, HttpStatus.OK);
     }
 
@@ -147,7 +147,7 @@ public class EnrollmentsController {
     ) {
         var rejectEnrollmentCommand = new RejectEnrollmentCommand(enrollmentId);
         var result = enrollmentCommandService.handle(rejectEnrollmentCommand)
-                .map(rejectedEnrollmentId -> new MessageResource("Enrollment rejected successfully"));
+                .map(_ -> new MessageResource("Enrollment rejected successfully"));
         return ResponseEntityAssembler.toResponseEntityFromResult(result, message -> message, HttpStatus.OK);
     }
 
@@ -178,7 +178,7 @@ public class EnrollmentsController {
     ) {
         var cancelEnrollmentCommand = new CancelEnrollmentCommand(enrollmentId);
         var result = enrollmentCommandService.handle(cancelEnrollmentCommand)
-                .map(cancelledEnrollmentId -> new MessageResource("Enrollment cancelled successfully"));
+                .map(_ -> new MessageResource("Enrollment cancelled successfully"));
         return ResponseEntityAssembler.toResponseEntityFromResult(result, message -> message, HttpStatus.OK);
     }
 

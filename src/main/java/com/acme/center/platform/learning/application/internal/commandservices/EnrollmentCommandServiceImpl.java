@@ -50,6 +50,8 @@ public class EnrollmentCommandServiceImpl implements EnrollmentCommandService {
     @Override
     public Result<Long, ApplicationError> handle(ConfirmEnrollmentCommand command) {
         return enrollmentRepository.findById(command.enrollmentId()).map(enrollment -> {
+            if (enrollment.isConfirmed())
+                return Result.<Long, ApplicationError>failure(ApplicationError.conflict("Enrollment", "Enrollment is already confirmed"));
             enrollment.confirm();
             return Result.<Long, ApplicationError>success(enrollmentRepository.save(enrollment).getId());
         }).orElseGet(() -> Result.failure(ApplicationError.notFound("Enrollment", command.enrollmentId().toString())));
@@ -58,6 +60,8 @@ public class EnrollmentCommandServiceImpl implements EnrollmentCommandService {
     @Override
     public Result<Long, ApplicationError> handle(RejectEnrollmentCommand command) {
         return enrollmentRepository.findById(command.enrollmentId()).map(enrollment -> {
+            if (enrollment.isRejected())
+                return Result.<Long, ApplicationError>failure(ApplicationError.conflict("Enrollment", "Enrollment is already rejected"));
             enrollment.reject();
             return Result.<Long, ApplicationError>success(enrollmentRepository.save(enrollment).getId());
         }).orElseGet(() -> Result.failure(ApplicationError.notFound("Enrollment", command.enrollmentId().toString())));
@@ -66,6 +70,8 @@ public class EnrollmentCommandServiceImpl implements EnrollmentCommandService {
     @Override
     public Result<Long, ApplicationError> handle(CancelEnrollmentCommand command) {
         return enrollmentRepository.findById(command.enrollmentId()).map(enrollment -> {
+            if (enrollment.isCancelled())
+                return Result.<Long, ApplicationError>failure(ApplicationError.conflict("Enrollment", "Enrollment is already cancelled"));
             enrollment.cancel();
             return Result.<Long, ApplicationError>success(enrollmentRepository.save(enrollment).getId());
         }).orElseGet(() -> Result.failure(ApplicationError.notFound("Enrollment", command.enrollmentId().toString())));

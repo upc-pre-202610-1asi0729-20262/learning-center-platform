@@ -197,7 +197,7 @@ public class CoursesController {
     ) {
         var deleteCourseCommand = new DeleteCourseCommand(courseId);
         var result = courseCommandService.handle(deleteCourseCommand)
-                .map(id -> new MessageResource("Course with given id successfully deleted"));
+                .map(_ -> new MessageResource("Course with given id successfully deleted"));
         return ResponseEntityAssembler.toResponseEntityFromResult(
                 result,
                 message -> message,

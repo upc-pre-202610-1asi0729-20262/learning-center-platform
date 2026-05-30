@@ -18,6 +18,7 @@ public class EnrollmentResourceFromEntityAssembler {
                 entity.getId(),
                 entity.getAcmeStudentRecordId().studentRecordId(),
                 entity.getCourse().getId(),
-                entity.getStatus().name().toLowerCase());
+                entity.getStatusName(),
+                entity.calculateDaysElapsed());
     }
 }

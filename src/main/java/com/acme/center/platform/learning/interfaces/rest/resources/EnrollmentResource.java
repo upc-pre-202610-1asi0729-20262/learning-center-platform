@@ -20,7 +20,10 @@ public record EnrollmentResource(
     @Schema(description = "Course identifier", example = "1")
     Long courseId,
 
-    @Schema(description = "Enrollment status", example = "PENDING", allowableValues = {"PENDING", "CONFIRMED", "REJECTED", "CANCELLED"})
-    String status
+    @Schema(description = "Enrollment status", example = "confirmed", allowableValues = {"requested", "confirmed", "rejected", "cancelled"})
+    String status,
+
+    @Schema(description = "Total days elapsed across all progress record items", example = "5")
+    long daysElapsed
 ) {
 }
