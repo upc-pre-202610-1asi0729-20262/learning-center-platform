@@ -44,6 +44,7 @@ Acceptance criteria:
     - `details` (String, optional) — additional context, such as the specific field or reason
 
 Error code to HTTP status mapping:
+
 | `code` value | HTTP Status | Typical cause |
 |---|---|---|
 | `VALIDATION_ERROR` | `400 Bad Request` | Missing or invalid request field |
