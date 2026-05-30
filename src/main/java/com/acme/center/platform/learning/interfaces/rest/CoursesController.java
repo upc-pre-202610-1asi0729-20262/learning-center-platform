@@ -126,12 +126,10 @@ public class CoursesController {
                 responseCode = "200",
                 description = "Courses retrieved successfully",
                 content = @Content(schema = @Schema(implementation = CourseResource.class))
-            ),
-            @ApiResponse(responseCode = "404", description = "No courses found")
+            )
     })
     public ResponseEntity<List<CourseResource>> getAllCourses() {
         var courses = courseQueryService.handle(new GetAllCoursesQuery());
-        if (courses.isEmpty()) return ResponseEntity.notFound().build();
         var courseResources = courses.stream()
                 .map(CourseResourceFromEntityAssembler::toResourceFromEntity)
                 .toList();
