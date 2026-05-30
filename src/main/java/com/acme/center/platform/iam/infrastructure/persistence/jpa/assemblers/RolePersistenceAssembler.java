@@ -19,7 +19,11 @@ public final class RolePersistenceAssembler {
     public static RolePersistenceEntity toPersistenceFromDomain(Role role) {
         if (role == null) return null;
         var entity = new RolePersistenceEntity();
-        entity.setId(role.getId());
+        // Only set ID if the role is being updated (has a non-null ID)
+        // For new roles, leave ID null to allow JPA to generate it
+        if (role.getId() != null) {
+            entity.setId(role.getId());
+        }
         entity.setName(role.getName());
         return entity;
     }

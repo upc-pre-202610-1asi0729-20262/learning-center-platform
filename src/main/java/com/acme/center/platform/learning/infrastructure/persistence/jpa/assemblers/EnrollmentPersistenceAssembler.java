@@ -47,7 +47,11 @@ public final class EnrollmentPersistenceAssembler {
         if (enrollment == null) return null;
 
         var entity = new EnrollmentPersistenceEntity();
-        entity.setId(enrollment.getId());
+        // Only set ID if the enrollment is being updated (has a non-null ID)
+        // For new enrollments, leave ID null to allow JPA to generate it
+        if (enrollment.getId() != null) {
+            entity.setId(enrollment.getId());
+        }
         entity.setAcmeStudentRecordId(enrollment.getAcmeStudentRecordId());
         entity.setCourse(CoursePersistenceAssembler.toPersistenceFromDomain(enrollment.getCourse()));
         entity.setStatus(enrollment.getStatus());
@@ -55,7 +59,11 @@ public final class EnrollmentPersistenceAssembler {
         var progressItems = new ArrayList<ProgressRecordItemPersistenceEntity>();
         for (var item : enrollment.getProgressRecord().getProgressRecordItems()) {
             var persistenceItem = new ProgressRecordItemPersistenceEntity();
-            persistenceItem.setId(item.getId());
+            // Only set ID if the item is being updated (has a non-null ID)
+            // For new items, leave ID null to allow JPA to generate it
+            if (item.getId() != null) {
+                persistenceItem.setId(item.getId());
+            }
             persistenceItem.setEnrollment(entity);
             persistenceItem.setTutorialId(item.getTutorialId());
             persistenceItem.setStatus(item.getStatus());

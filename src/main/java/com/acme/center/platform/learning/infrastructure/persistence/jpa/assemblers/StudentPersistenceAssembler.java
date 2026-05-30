@@ -24,7 +24,11 @@ public final class StudentPersistenceAssembler {
     public static StudentPersistenceEntity toPersistenceFromDomain(Student student) {
         if (student == null) return null;
         var entity = new StudentPersistenceEntity();
-        entity.setId(student.getId());
+        // Only set ID if the student is being updated (has a non-null ID)
+        // For new students, leave ID null to allow JPA to generate it
+        if (student.getId() != null) {
+            entity.setId(student.getId());
+        }
         entity.setAcmeStudentRecordId(student.getAcmeStudentRecordId());
         entity.setProfileId(student.getProfileId());
         entity.setPerformanceMetricSet(student.getPerformanceMetricSet());

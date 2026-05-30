@@ -51,14 +51,22 @@ public final class CoursePersistenceAssembler {
         if (course == null) return null;
 
         var entity = new CoursePersistenceEntity();
-        entity.setId(course.getId());
+        // Only set ID if the course is being updated (has a non-null ID)
+        // For new courses, leave ID null to allow JPA to generate it
+        if (course.getId() != null) {
+            entity.setId(course.getId());
+        }
         entity.setTitle(course.getTitle());
         entity.setDescription(course.getDescription());
 
         var persistenceByDomain = new HashMap<LearningPathItem, LearningPathItemPersistenceEntity>();
         for (var item : course.getLearningPath().getLearningPathItems()) {
             var persistenceItem = new LearningPathItemPersistenceEntity();
-            persistenceItem.setId(item.getId());
+            // Only set ID if the item is being updated (has a non-null ID)
+            // For new items, leave ID null to allow JPA to generate it
+            if (item.getId() != null) {
+                persistenceItem.setId(item.getId());
+            }
             persistenceItem.setCourse(entity);
             persistenceItem.setTutorialId(item.getTutorialId());
             persistenceByDomain.put(item, persistenceItem);

@@ -28,7 +28,11 @@ public final class UserPersistenceAssembler {
     public static UserPersistenceEntity toPersistenceFromDomain(User user) {
         if (user == null) return null;
         var entity = new UserPersistenceEntity();
-        entity.setId(user.getId());
+        // Only set ID if the user is being updated (has a non-null ID)
+        // For new users, leave ID null to allow JPA to generate it
+        if (user.getId() != null) {
+            entity.setId(user.getId());
+        }
         entity.setUsername(user.getUsername());
         entity.setPassword(user.getPassword());
         entity.setRoles(user.getRoles() == null
