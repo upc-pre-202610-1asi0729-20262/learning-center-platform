@@ -20,8 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- *  Roles Controller - Manages system roles and permissions
- *  This controller is responsible for retrieving all available roles in the system
+ * REST controller that exposes IAM role resources.
  */
 @RestController
 @RequestMapping(value = "/api/v1/roles", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -34,8 +33,9 @@ public class RolesController {
     }
 
     /**
-     * Get all roles
-     * @return List of role resources
+     * Retrieves all available roles.
+     *
+     * @return list of role resources
      */
     @GetMapping
     @Operation(

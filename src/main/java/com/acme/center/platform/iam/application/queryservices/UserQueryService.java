@@ -9,30 +9,30 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * User query service
- * <p>
- *     This interface represents the service to handle user queries.
- * </p>
+ * Application service contract for IAM user read queries.
  */
 public interface UserQueryService {
     /**
-     * Handle get all users query
-     * @param query the {@link GetAllUsersQuery} query
-     * @return a list of {@link User} entities
+     * Handles retrieval of all users.
+     *
+     * @param query query marker
+     * @return list of users
      */
     List<User> handle(GetAllUsersQuery query);
 
     /**
-     * Handle get user by id query
-     * @param query the {@link GetUserByIdQuery} query
-     * @return an {@link Optional} of {@link User} entity
+     * Handles retrieval of a user by id.
+     *
+     * @param query user-id query
+     * @return matching user, if found
      */
     Optional<User> handle(GetUserByIdQuery query);
 
     /**
-     * Handle get user by username query
-     * @param query the {@link GetUserByUsernameQuery} query
-     * @return an {@link Optional} of {@link User} entity
+     * Handles retrieval of a user by username.
+     *
+     * @param query username query
+     * @return matching user, if found
      */
     Optional<User> handle(GetUserByUsernameQuery query);
 

@@ -7,25 +7,26 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 /**
- * External Profile Service
+ * ACL service used by the Learning bounded context to interact with Profiles capabilities.
  */
 @Service
 public class ExternalProfileService {
     private final ProfilesContextFacade profilesContextFacade;
 
     /**
-     * Constructor
+     * Creates the service with the Profiles ACL facade dependency.
      *
-     * @param profilesContextFacade Profiles Context Facade
+     * @param profilesContextFacade profiles bounded-context facade
      */
     public ExternalProfileService(ProfilesContextFacade profilesContextFacade) {
         this.profilesContextFacade = profilesContextFacade;
     }
 
     /**
-     * Fetch Profile By Email
-     * @param email
-     * @return An {@link Optional} of {@link ProfileId}
+     * Fetches a profile identifier by email.
+     *
+     * @param email profile email address
+     * @return optional profile identifier
      */
     public Optional<ProfileId> fetchProfileByEmail(String email) {
         var profileId = profilesContextFacade.fetchProfileIdByEmail(email);
@@ -33,16 +34,9 @@ public class ExternalProfileService {
     }
 
     /**
-     * Create Profile
-     * @param firstName
-     * @param lastName
-     * @param email
-     * @param street
-     * @param number
-     * @param city
-     * @param postalCode
-     * @param country
-     * @return An {@link Optional} of {@link ProfileId}
+     * Creates a profile through the Profiles bounded context.
+     *
+     * @return optional created profile identifier
      */
     public Optional<ProfileId> createProfile(
             String firstName,

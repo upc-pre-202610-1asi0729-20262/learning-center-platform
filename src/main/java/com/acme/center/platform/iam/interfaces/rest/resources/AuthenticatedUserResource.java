@@ -2,6 +2,12 @@ package com.acme.center.platform.iam.interfaces.rest.resources;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+/**
+ * Resource returned after successful authentication.
+ *
+ * <p>Contains the authenticated user identifier, username, and the bearer token to be used in
+ * subsequent API calls.</p>
+ */
 @Schema(
     name = "AuthenticatedUserResponse",
     description = "Authenticated user information with JWT token",

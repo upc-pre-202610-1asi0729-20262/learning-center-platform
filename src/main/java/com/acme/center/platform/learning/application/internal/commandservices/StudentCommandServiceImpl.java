@@ -14,7 +14,7 @@ import com.acme.center.platform.shared.application.result.Result;
 import org.springframework.stereotype.Service;
 
 /**
- * Implementation of the StudentCommandService interface.
+ * Application service that executes student commands.
  */
 @Service
 public class StudentCommandServiceImpl implements StudentCommandService {

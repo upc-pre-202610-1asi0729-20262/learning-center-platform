@@ -7,43 +7,50 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * EnrollmentQueryService
- * Service that handles enrollment queries
+ * Application service contract for enrollment read queries.
  */
 public interface EnrollmentQueryService {
     /**
-     * Handle a get all enrollments by acme student record id query
+     * Handles retrieval of enrollments by ACME student record id.
      *
-     * @param query The get all enrollments by acme student record id query containing the acme student record id
-     * @return The list of enrollments for the acme student record id
+     * @param query student-record-id query
+     * @return list of enrollments for the given student
      * @see GetAllEnrollmentsByAcmeStudentRecordIdQuery
      */
     List<Enrollment> handle(GetAllEnrollmentsByAcmeStudentRecordIdQuery query);
+
     /**
-     * Handle a get enrollment by id query
-     * @param query The get enrollment by id query containing the enrollment id
-     * @return The enrollment for the id
+     * Handles retrieval of an enrollment by id.
+     *
+     * @param query enrollment-id query
+     * @return matching enrollment, if found
      * @see GetEnrollmentByIdQuery
      */
     Optional<Enrollment> handle(GetEnrollmentByIdQuery query);
+
     /**
-     * Handle a get all enrollments query
-     * @param query The get all enrollments query
-     * @return The list of enrollments
+     * Handles retrieval of all enrollments.
+     *
+     * @param query query marker
+     * @return list of enrollments
      * @see GetAllEnrollmentsQuery
      */
     List<Enrollment> handle(GetAllEnrollmentsQuery query);
+
     /**
-     * Handle a get all enrollments by course id query
-     * @param query The get all enrollments by course id query containing the course id
-     * @return The list of enrollments for the course id
+     * Handles retrieval of enrollments by course id.
+     *
+     * @param query course-id query
+     * @return list of enrollments for the course
      * @see GetAllEnrollmentsByCourseIdQuery
      */
     List<Enrollment> handle(GetAllEnrollmentsByCourseIdQuery query);
+
     /**
-     * Handle a get enrollment by acme student record id and course id query
-     * @param query The get enrollment by acme student record id and course id query containing the acme student record id and course id
-     * @return The enrollment for the acme student record id and course id
+     * Handles retrieval of an enrollment by student record id and course id.
+     *
+     * @param query student-and-course query
+     * @return matching enrollment, if found
      * @see GetEnrollmentByAcmeStudentRecordIdAndCourseIdQuery
      */
     Optional<Enrollment> handle(GetEnrollmentByAcmeStudentRecordIdAndCourseIdQuery query);

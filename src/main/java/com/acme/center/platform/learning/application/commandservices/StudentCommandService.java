@@ -8,31 +8,32 @@ import com.acme.center.platform.shared.application.result.ApplicationError;
 import com.acme.center.platform.shared.application.result.Result;
 
 /**
- * StudentCommandService
- * This interface defines the contract for the StudentCommandService.
+ * Application service contract for commands over student records.
  */
 public interface StudentCommandService {
     /**
-     * handle
-     * This method is used to handle the CreateStudentCommand.
-     * @param command the CreateStudentCommand containing the student data.
-     * @return Result containing AcmeStudentRecordId generated for the student, or an error.
+     * Handles student creation from profile input data.
+     *
+     * @param command command containing student and profile fields
+     * @return created student record id or an application error
      */
     Result<AcmeStudentRecordId, ApplicationError> handle(CreateStudentCommand command);
 
     /**
-     * handle
-     * This method is used to handle the CreateStudentByProfileIdCommand.
-     * Triggered reactively when a {@code ProfileCreatedEvent} is received.
-     * @param command the CreateStudentByProfileIdCommand containing the profile id.
-     * @return Result containing AcmeStudentRecordId generated for the student, or an error.
+     * Handles student creation from an existing profile identifier.
+     *
+     * <p>Typically invoked by an integration/event flow after profile creation.</p>
+     *
+     * @param command command containing the profile id
+     * @return created student record id or an application error
      */
     Result<AcmeStudentRecordId, ApplicationError> handle(CreateStudentByProfileIdCommand command);
+
     /**
-     * handle
-     * This method is used to handle the UpdateStudentMetricsOnTutorialCompletedCommand.
-     * @param command the UpdateStudentMetricsOnTutorialCompletedCommand containing the student record id.
-     * @return Result containing AcmeStudentRecordId for the student whose metrics are updated, or an error.
+     * Handles student metric updates after tutorial completion.
+     *
+     * @param command command containing the target student record id
+     * @return updated student record id or an application error
      */
     Result<AcmeStudentRecordId, ApplicationError> handle(UpdateStudentMetricsOnTutorialCompletedCommand command);
 }

@@ -10,28 +10,32 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * CourseQueryService
- * Service that handles course queries
+ * Application service contract for course read queries.
  */
 public interface CourseQueryService {
     /**
-     * Handle a get course by id query
-     * @param query The get course by id query containing the course id
-     * @return The course
+     * Handles retrieval of a course by id.
+     *
+     * @param query course-id query
+     * @return matching course, if found
      * @see GetCourseByIdQuery
      */
     Optional<Course> handle(GetCourseByIdQuery query);
+
     /**
-     * Handle a get all courses query
-     * @param query The get all courses query
-     * @return The list of courses
+     * Handles retrieval of all courses.
+     *
+     * @param query query marker
+     * @return list of courses
      * @see GetAllCoursesQuery
      */
     List<Course> handle(GetAllCoursesQuery query);
+
     /**
-     * Handle a get learning path item by course id and tutorial id query
-     * @param query The get learning path item by course id and tutorial id query containing the course id and tutorial id
-     * @return The learning path item
+     * Handles retrieval of a learning path item by course and tutorial ids.
+     *
+     * @param query course/tutorial query
+     * @return matching learning path item, if found
      * @see GetLearningPathItemByCourseIdAndTutorialIdQuery
      */
     Optional<LearningPathItem> handle(GetLearningPathItemByCourseIdAndTutorialIdQuery query);

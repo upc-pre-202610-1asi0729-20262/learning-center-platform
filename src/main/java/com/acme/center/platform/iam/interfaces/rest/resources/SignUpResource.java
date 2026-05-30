@@ -3,6 +3,9 @@ package com.acme.center.platform.iam.interfaces.rest.resources;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
+/**
+ * Resource received to register a new IAM user.
+ */
 @Schema(
     name = "SignUpRequest",
     description = "User sign-up request with credentials and roles",

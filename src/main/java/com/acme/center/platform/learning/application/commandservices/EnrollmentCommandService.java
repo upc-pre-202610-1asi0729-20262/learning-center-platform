@@ -5,42 +5,50 @@ import com.acme.center.platform.shared.application.result.ApplicationError;
 import com.acme.center.platform.shared.application.result.Result;
 
 /**
- * EnrollmentCommandService
- * Service that handles enrollment commands
+ * Application service contract for enrollment lifecycle commands.
  */
 public interface EnrollmentCommandService {
     /**
-     * Handle a request enrollment command
-     * @param command The request enrollment command containing the enrollment data
-     * @return Result containing requested enrollment id or an application error
+     * Handles enrollment request creation.
+     *
+     * @param command enrollment request command
+     * @return requested enrollment identifier or an application error
      * @see RequestEnrollmentCommand
      */
     Result<Long, ApplicationError> handle(RequestEnrollmentCommand command);
+
     /**
-     * Handle a confirm enrollment command
-     * @param command The confirm enrollment command containing the enrollment id
-     * @return Result containing confirmed enrollment id or an application error
+     * Handles enrollment confirmation.
+     *
+     * @param command enrollment confirmation command
+     * @return confirmed enrollment identifier or an application error
      * @see ConfirmEnrollmentCommand
      */
     Result<Long, ApplicationError> handle(ConfirmEnrollmentCommand command);
+
     /**
-     * Handle a reject enrollment command
-     * @param command The reject enrollment command containing the enrollment id
-     * @return Result containing rejected enrollment id or an application error
+     * Handles enrollment rejection.
+     *
+     * @param command enrollment rejection command
+     * @return rejected enrollment identifier or an application error
      * @see RejectEnrollmentCommand
      */
     Result<Long, ApplicationError> handle(RejectEnrollmentCommand command);
+
     /**
-     * Handle a cancel enrollment command
-     * @param command The cancel enrollment command containing the enrollment id
-     * @return Result containing canceled enrollment id or an application error
+     * Handles enrollment cancellation.
+     *
+     * @param command enrollment cancellation command
+     * @return canceled enrollment identifier or an application error
      * @see CancelEnrollmentCommand
      */
     Result<Long, ApplicationError> handle(CancelEnrollmentCommand command);
+
     /**
-     * Handle a complete tutorial for enrollment command
-     * @param command The complete tutorial for enrollment command containing the enrollment id and tutorial id
-     * @return Result containing enrollment id where the tutorial was completed or an application error
+     * Handles tutorial completion for an enrollment.
+     *
+     * @param command tutorial completion command
+     * @return enrollment identifier or an application error
      * @see CompleteTutorialForEnrollmentCommand
      */
     Result<Long, ApplicationError> handle(CompleteTutorialForEnrollmentCommand command);

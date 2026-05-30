@@ -8,23 +8,22 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Role query service
- * <p>
- *     This interface represents the service that handles the role queries.
- * </p>
+ * Application service contract for IAM role read queries.
  */
 public interface RoleQueryService {
     /**
-     * Handle get all roles query
-     * @param query the {@link GetAllRolesQuery} query
-     * @return a list of {@link Role} entities
+     * Handles retrieval of all roles.
+     *
+     * @param query query marker
+     * @return list of roles
      */
     List<Role> handle(GetAllRolesQuery query);
 
     /**
-     * Handle get role by name query
-     * @param query the {@link GetRoleByNameQuery} query
-     * @return an {@link Optional} of {@link Role} entity
+     * Handles retrieval of a role by name.
+     *
+     * @param query role-name query
+     * @return matching role, if found
      */
     Optional<Role> handle(GetRoleByNameQuery query);
 }

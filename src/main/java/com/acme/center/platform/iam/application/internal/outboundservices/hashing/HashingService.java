@@ -1,22 +1,23 @@
 package com.acme.center.platform.iam.application.internal.outboundservices.hashing;
 
 /**
- * HashingService interface
- * This interface is used to encode and match passwords
+ * Outbound port for password hashing operations required by the IAM application layer.
  */
 public interface HashingService {
     /**
-     * Encode a password
-     * @param rawPassword the password to encode
-     * @return String the encoded password
+     * Encodes a raw password for persistence.
+     *
+     * @param rawPassword raw password value
+     * @return encoded password representation
      */
     String encode(CharSequence rawPassword);
 
     /**
-     * Match a raw password with an encoded password
-     * @param rawPassword the raw password
-     * @param encodedPassword the encoded password
-     * @return boolean true if the raw password matches the encoded password, false otherwise
+     * Verifies whether a raw password matches an encoded password.
+     *
+     * @param rawPassword raw password value
+     * @param encodedPassword encoded password representation
+     * @return {@code true} when both values match; otherwise {@code false}
      */
     boolean matches(CharSequence rawPassword, String encodedPassword);
 

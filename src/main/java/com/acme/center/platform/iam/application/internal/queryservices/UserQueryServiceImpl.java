@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Implementation of {@link UserQueryService} interface.
+ * Application service that resolves IAM user read queries.
  */
 @Service
 public class UserQueryServiceImpl implements UserQueryService {

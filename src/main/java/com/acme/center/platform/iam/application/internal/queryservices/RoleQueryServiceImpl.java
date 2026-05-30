@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Role query service implementation.
+ * Application service that resolves IAM role read queries.
  */
 @Service
 public class RoleQueryServiceImpl implements RoleQueryService {

@@ -3,16 +3,13 @@ package com.acme.center.platform.iam.application.commandservices;
 import com.acme.center.platform.iam.domain.model.commands.SeedRolesCommand;
 
 /**
- * Role command service
- * <p>
- *     This interface represents the service to handle role commands.
- * </p>
+ * Application service contract for IAM role commands.
  */
 public interface RoleCommandService {
     /**
-     * Handle seed roles command
-     * @param command the {@link SeedRolesCommand} command
+     * Handles the role seeding command.
      *
+     * @param command role-seeding command
      */
     void handle(SeedRolesCommand command);
 }

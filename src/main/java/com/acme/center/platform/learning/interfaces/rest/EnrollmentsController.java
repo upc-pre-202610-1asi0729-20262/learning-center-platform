@@ -31,7 +31,7 @@ import java.util.List;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
- * Enrollments Controller - Manages student course enrollments and approval workflow
+ * REST controller that exposes enrollment resources and enrollment lifecycle endpoints.
  */
 @RestController
 @RequestMapping(value = "/api/v1/enrollments", produces = APPLICATION_JSON_VALUE)

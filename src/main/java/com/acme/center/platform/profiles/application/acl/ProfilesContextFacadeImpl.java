@@ -8,6 +8,12 @@ import com.acme.center.platform.profiles.application.queryservices.ProfileQueryS
 import com.acme.center.platform.profiles.interfaces.acl.ProfilesContextFacade;
 import org.springframework.stereotype.Service;
 
+/**
+ * Application-layer implementation of the Profiles ACL facade.
+ *
+ * <p>Provides a simplified integration surface for other bounded contexts that need profile
+ * operations without coupling to Profiles internal models.</p>
+ */
 @Service
 public class ProfilesContextFacadeImpl implements ProfilesContextFacade {
     private final ProfileCommandService profileCommandService;
@@ -18,6 +24,11 @@ public class ProfilesContextFacadeImpl implements ProfilesContextFacade {
         this.profileQueryService = profileQueryService;
     }
 
+    /**
+     * Creates a profile through the Profiles application command service.
+     *
+     * @return created profile identifier, or {@code 0L} when creation fails
+     */
     public Long createProfile(
             String firstName,
             String lastName,
@@ -42,6 +53,12 @@ public class ProfilesContextFacadeImpl implements ProfilesContextFacade {
                 .orElse(0L);
     }
 
+    /**
+     * Fetches a profile identifier by email through the Profiles query service.
+     *
+     * @param email profile email address
+     * @return profile identifier, or {@code 0L} when no profile is found
+     */
     public Long fetchProfileIdByEmail(String email) {
         var getProfileByEmailQuery = new GetProfileByEmailQuery(new EmailAddress(email));
         var profile = profileQueryService.handle(getProfileByEmailQuery);

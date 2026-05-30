@@ -12,7 +12,7 @@ import com.acme.center.platform.shared.application.result.Result;
 import org.springframework.stereotype.Service;
 
 /**
- * Implementation of the CourseCommandService interface.
+ * Application service that executes course commands.
  */
 @Service
 public class CourseCommandServiceImpl implements CourseCommandService {

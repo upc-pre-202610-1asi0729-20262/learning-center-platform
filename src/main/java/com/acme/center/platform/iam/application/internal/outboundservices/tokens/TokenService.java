@@ -1,29 +1,31 @@
 package com.acme.center.platform.iam.application.internal.outboundservices.tokens;
 
 /**
- * TokenService interface
- * This interface is used to generate and validate tokens
+ * Outbound port for bearer token issuance and validation used by IAM commands and queries.
  */
 public interface TokenService {
 
     /**
-     * Generate a token for a given username
-     * @param username the username
-     * @return String the token
+     * Generates a token for a username.
+     *
+     * @param username principal username
+     * @return signed token value
      */
     String generateToken(String username);
 
     /**
-     * Extract the username from a token
-     * @param token the token
-     * @return String the username
+     * Extracts the username from a token.
+     *
+     * @param token token value
+     * @return username embedded in the token
      */
     String getUsernameFromToken(String token);
 
     /**
-     * Validate a token
-     * @param token the token
-     * @return boolean true if the token is valid, false otherwise
+     * Validates a token.
+     *
+     * @param token token value
+     * @return {@code true} when token is valid; otherwise {@code false}
      */
     boolean validateToken(String token);
 }

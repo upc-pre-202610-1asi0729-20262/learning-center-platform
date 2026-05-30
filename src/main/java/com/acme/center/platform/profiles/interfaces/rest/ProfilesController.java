@@ -25,7 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * ProfilesController - Profiles management
+ * REST controller that exposes profile resources and profile retrieval endpoints.
  */
 @RestController
 @RequestMapping(value = "/api/v1/profiles", produces = MediaType.APPLICATION_JSON_VALUE)

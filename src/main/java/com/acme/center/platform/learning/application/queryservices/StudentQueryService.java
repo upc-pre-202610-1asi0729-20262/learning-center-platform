@@ -8,32 +8,32 @@ import com.acme.center.platform.learning.domain.model.queries.GetStudentByProfil
 import java.util.Optional;
 
 /**
- * StudentQueryService
- * This interface defines the contract for the StudentQueryService.
+ * Application service contract for student read queries.
  */
 public interface StudentQueryService {
     /**
-     * handle
-     * This method is used to handle the GetEnrollmentByAcmeStudentRecordIdAndCourseIdQuery.
-     * @param query the GetStudentByProfileIdQuery containing the student record id and profile id.
-     * @return Optional<Student> containing the student for the given profile id.
+     * Handles retrieval of a student by profile id.
+     *
+     * @param query profile-id query
+     * @return matching student, if found
      * @see GetStudentByProfileIdQuery
      */
     Optional<Student> handle(GetStudentByProfileIdQuery query);
+
     /**
-     * handle
-     * This method is used to handle the GetEnrollmentByAcmeStudentRecordIdAndCourseIdQuery.
-     * @param query the GetStudentByAcmeStudentRecordIdQuery containing the student record id.
-     * @return Optional<Student> containing the student for the given record id.
+     * Handles retrieval of a student by ACME student record id.
+     *
+     * @param query student-record-id query
+     * @return matching student, if found
      * @see GetStudentByAcmeStudentRecordIdQuery
      */
     Optional<Student> handle(GetStudentByAcmeStudentRecordIdQuery query);
 
     /**
-     * handle
-     * This method is used to handle the ExistByAcmeStudentRecordIdQuery.
-     * @param query the ExistByAcmeStudentRecordIdQuery containing the student record id.
-     * @return boolean indicating if a student with the given record ID exists.
+     * Handles student existence verification by ACME student record id.
+     *
+     * @param query student-record-id query
+     * @return {@code true} when student exists; otherwise {@code false}
      * @see ExistsByAcmeStudentRecordIdQuery
      */
     boolean handle(ExistsByAcmeStudentRecordIdQuery query);

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Profile Query Service
+ * Application service contract for Profiles bounded-context read queries.
  */
 public interface ProfileQueryService {
     /**

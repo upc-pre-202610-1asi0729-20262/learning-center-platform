@@ -15,6 +15,9 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
+/**
+ * Configures the OpenAPI specification exposed by the platform.
+ */
 @Configuration
 public class OpenApiConfiguration {
     // Properties
@@ -29,6 +32,11 @@ public class OpenApiConfiguration {
 
     // Methods
 
+    /**
+     * Builds the OpenAPI document used by Swagger UI and client generation tools.
+     *
+     * @return configured OpenAPI descriptor
+     */
     @Bean
     public OpenAPI learningPlatformOpenApi() {
 

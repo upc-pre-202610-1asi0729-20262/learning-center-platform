@@ -15,7 +15,7 @@ import com.acme.center.platform.shared.application.result.Result;
 import org.springframework.stereotype.Service;
 
 /**
- * Implementation of the EnrollmentCommandService interface.
+ * Application service that executes enrollment lifecycle commands.
  */
 @Service
 public class EnrollmentCommandServiceImpl implements EnrollmentCommandService {

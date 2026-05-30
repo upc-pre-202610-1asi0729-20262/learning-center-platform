@@ -3,6 +3,9 @@ package com.acme.center.platform.iam.interfaces.rest.resources;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
+/**
+ * Resource representing an IAM user returned by the REST API.
+ */
 @Schema(
     name = "UserResponse",
     description = "User information response",

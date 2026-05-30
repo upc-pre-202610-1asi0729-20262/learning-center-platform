@@ -25,10 +25,7 @@ import java.util.List;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
- * StudentEnrollmentsController - Retrieves enrollments for a specific student
- *
- * <p>Endpoint for retrieving all enrollments for a student by their record ID.
- * </p>
+ * REST controller that exposes enrollment resources for a specific student.
  */
 @RestController
 @RequestMapping(value = "/api/v1/students/{studentRecordId}/enrollments", produces = APPLICATION_JSON_VALUE)

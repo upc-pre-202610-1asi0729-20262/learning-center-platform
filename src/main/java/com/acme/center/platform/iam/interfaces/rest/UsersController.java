@@ -23,11 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * This class is a REST controller that exposes the users resource.
- * It includes the following operations:
- * - GET /api/v1/users: returns all the users
- * - GET /api/v1/users/{userId}: returns the user with the given id
- **/
+ * REST controller that exposes IAM user resources.
+ */
 @RestController
 @RequestMapping(value = "/api/v1/users", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Users", description = "User management endpoints")
@@ -39,8 +36,9 @@ public class UsersController {
     }
 
     /**
-     * This method returns all the users.
-     * @return a list of user resources
+     * Retrieves all users.
+     *
+     * @return list of user resources
      * @see UserResource
      */
     @GetMapping
@@ -66,10 +64,10 @@ public class UsersController {
     }
 
     /**
-     * This method returns the user with the given id.
-     * @param userId the user id
-     * @return the user resource with the given id
-     * @throws RuntimeException if the user is not found
+     * Retrieves a user by identifier.
+     *
+     * @param userId user identifier
+     * @return user resource when found
      * @see UserResource
      */
     @GetMapping(value = "/{userId}")

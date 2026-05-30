@@ -9,6 +9,12 @@ import com.acme.center.platform.shared.domain.model.aggregates.AbstractDomainAgg
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Enrollment aggregate root.
+ *
+ * <p>Represents a learner enrollment in a specific course and governs enrollment state
+ * transitions and tutorial completion progress.</p>
+ */
 @Getter
 public class Enrollment extends AbstractDomainAggregateRoot<Enrollment> {
     @Setter

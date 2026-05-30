@@ -9,35 +9,41 @@ import com.acme.center.platform.shared.application.result.ApplicationError;
 import com.acme.center.platform.shared.application.result.Result;
 
 /**
- * CourseCommandService
- * Service that handles course commands
+ * Application service contract for commands over the {@link Course} aggregate.
  */
 public interface CourseCommandService {
     /**
-     * Handle a create course command
-     * @param command The create course command containing the course data
-     * @return Result containing the created course id or an application error
+     * Handles course creation.
+     *
+     * @param command command containing initial course data
+     * @return created course identifier or an application error
      * @see CreateCourseCommand
      */
     Result<Long, ApplicationError> handle(CreateCourseCommand command);
+
     /**
-     * Handle an update course command
-     * @param command The update course command containing the course data
-     * @return Result containing the updated course or an application error
+     * Handles course update.
+     *
+     * @param command command containing target course id and new data
+     * @return updated course aggregate or an application error
      * @see UpdateCourseCommand
      */
     Result<Course, ApplicationError> handle(UpdateCourseCommand command);
+
     /**
-     * Handle a delete course command
-     * @param command The delete course command containing the course id
-     * @return Result containing the deleted course id or an application error
+     * Handles course deletion.
+     *
+     * @param command command containing target course id
+     * @return deleted course identifier or an application error
      * @see DeleteCourseCommand
      */
     Result<Long, ApplicationError> handle(DeleteCourseCommand command);
+
     /**
-     * Handle an add tutorial to course learning path command
-     * @param command The add tutorial to course learning path command containing the course id and tutorial id
-     * @return Result containing the course id or an application error
+     * Handles tutorial addition to a course learning path.
+     *
+     * @param command command containing target course id and tutorial id
+     * @return updated course identifier or an application error
      * @see AddTutorialToCourseLearningPathCommand
      */
     Result<Long, ApplicationError> handle(AddTutorialToCourseLearningPathCommand command);

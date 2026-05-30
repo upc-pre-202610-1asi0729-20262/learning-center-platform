@@ -10,8 +10,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 
 /**
- * ApplicationReadyEventHandler class
- * This class is used to handle the ApplicationReadyEvent
+ * Application lifecycle handler that ensures IAM roles are seeded when the application is ready.
  */
 @Service
 @Slf4j
@@ -23,9 +22,9 @@ public class ApplicationReadyEventHandler {
     }
 
     /**
-     * Handle the ApplicationReadyEvent
-     * This method is used to seed the roles
-     * @param event the ApplicationReadyEvent the event to handle
+     * Handles the Spring application-ready event and triggers role seeding verification.
+     *
+     * @param event Spring Boot readiness event
      */
     @EventListener
     public void on(ApplicationReadyEvent event) {

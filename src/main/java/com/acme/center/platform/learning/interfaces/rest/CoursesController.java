@@ -31,10 +31,7 @@ import java.util.List;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
- * CoursesController
- * <p>
- *     All course-related endpoints for managing courses in the learning platform.
- * </p>
+ * REST controller that exposes course resources and course administration endpoints.
  */
 @RestController
 @RequestMapping(value = "/api/v1/courses", produces = APPLICATION_JSON_VALUE)

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Implementation of the CourseQueryService interface.
+ * Application service that resolves course read queries.
  */
 @Service
 public class CourseQueryServiceImpl implements CourseQueryService {

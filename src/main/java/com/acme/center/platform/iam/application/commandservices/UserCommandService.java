@@ -8,23 +8,22 @@ import com.acme.center.platform.shared.application.result.Result;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
 /**
- * User command service
- * <p>
- *     This interface represents the service to handle user commands.
- * </p>
+ * Application service contract for IAM user commands.
  */
 public interface UserCommandService {
     /**
-     * Handle sign-in command
-     * @param command the {@link SignInCommand} command
-     * @return a {@link Result} with authenticated user and token or an {@link ApplicationError}
+     * Handles user sign-in.
+     *
+     * @param command sign-in command
+     * @return authenticated user and token pair, or an application error
      */
     Result<ImmutablePair<User, String>, ApplicationError> handle(SignInCommand command);
 
     /**
-     * Handle sign-up command
-     * @param command the {@link SignUpCommand} command
-     * @return a {@link Result} with created user or an {@link ApplicationError}
+     * Handles user sign-up.
+     *
+     * @param command sign-up command
+     * @return created user aggregate, or an application error
      */
     Result<User, ApplicationError> handle(SignUpCommand command);
 

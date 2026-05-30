@@ -12,16 +12,16 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Profile Query Service Implementation
+ * Application service that resolves Profiles bounded-context read queries.
  */
 @Service
 public class ProfileQueryServiceImpl implements ProfileQueryService {
     private final ProfileRepository profileRepository;
 
     /**
-     * Constructor
+     * Creates the query service with the profile repository dependency.
      *
-     * @param profileRepository The {@link ProfileRepository} instance
+     * @param profileRepository profile repository port
      */
     public ProfileQueryServiceImpl(ProfileRepository profileRepository) {
         this.profileRepository = profileRepository;
