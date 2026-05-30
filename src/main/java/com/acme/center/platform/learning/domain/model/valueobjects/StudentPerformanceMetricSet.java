@@ -1,7 +1,5 @@
 package com.acme.center.platform.learning.domain.model.valueobjects;
 
-import jakarta.persistence.Embeddable;
-
 /**
  * Value object representing the student performance metric set.
  * @summary
