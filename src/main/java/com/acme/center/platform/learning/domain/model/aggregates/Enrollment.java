@@ -87,7 +87,7 @@ public class Enrollment extends AbstractDomainAggregateRoot<Enrollment> {
 
     /**
      * Cancels the enrollment.
-     * Changes the status to CANCELLED.
+     * Changes the status to be CANCELLED.
      */
     public void cancel() {
         this.status = EnrollmentStatus.CANCELLED;
